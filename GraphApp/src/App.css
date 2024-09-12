@@ -15,6 +15,12 @@
   -webkit-text-size-adjust: 100%;
 }
 
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .container {
   margin: 0;
   padding-top: 10vh;
@@ -25,13 +31,31 @@
 }
 
 .button-group {
+  width: 100px;
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: left;
+  position: fixed;
+  left: 10px;
+}
+
+.workspace {
+  display: flex;
+  min-width: 700px;
+  position: fixed;
+  left: 120px;
+}
+
+.node-info {
+  width: 200px;
+  position: fixed;
+  right: 10px;
 }
 
 .row {
   display: flex;
+  flex-direction: row;
   justify-content: center;
 }
 
@@ -50,7 +74,9 @@ a:hover {
 }
 
 h1 {
-  text-align: center;
+  text-align: left;
+  justify-content: baseline;
+  font-size: 20px;
 }
 
 input,

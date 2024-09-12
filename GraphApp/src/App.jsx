@@ -1,26 +1,31 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
 
   return (
-    <div className="container">
-      <h1>Network Graph Design</h1>
-
-      <div class="button-group">{}
-        <button type="button">Load Graph</button>
-        <button type="button">New Graph</button>
+    <div className="page">
+      <div className="page">
+          <h1>GraphName</h1>
+          <div className="tab-group">
+            <button type="tab" >File</button>
+            <button type="tab" >Edit</button>
+            <button type="tab" >Analysis</button>
+          </div>
       </div>
-
+      <div className="row">
+          <div className="button-group">
+            <button type="button">Host</button>
+            <button type="button">Router</button>
+            <button type="button">Firewall</button>
+            <button type="button">Edge</button>
+          </div>
+          <div className="workspace">
+            <h3>Workspace</h3>
+          </div>
+          <div className="node-info">
+            <h3>Node</h3>
+          </div>
+      </div>
     </div>
   );
 }

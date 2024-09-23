@@ -1,4 +1,4 @@
-
+/* 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -15,12 +15,6 @@
   -webkit-text-size-adjust: 100%;
 }
 
-.page {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
 .container {
   margin: 0;
   padding-top: 10vh;
@@ -28,6 +22,25 @@
   flex-direction: column;
   justify-content: center;
   text-align: center;
+  gap: 10px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.tab-group {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 .button-group {
@@ -51,12 +64,6 @@
   width: 200px;
   position: fixed;
   right: 10px;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
 }
 
 button {
@@ -132,4 +139,4 @@ button {
   button:active {
     background-color: #0f0f0f69;
   }
-}
+} */

@@ -1,33 +1,109 @@
-import "./App.css";
+import React, { useRef, useCallback } from 'react';
+import {
+  ReactFlow,
+  ReactFlowProvider,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  Controls,
+  useReactFlow,
+  Background,
+  BackgroundVariant,
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 
-function App() {
+import Sidebar from './Sidebar';
+import { DnDProvider, useDnD } from './DnDContext';
+
+import './index.css';
+
+const initialNodes = [
+  {
+    id: '1',
+    type: 'input',
+    data: { label: 'input node' },
+    position: { x: 250, y: 5 },
+  },
+];
+
+let id = 0;
+const getId = () => `dndnode_${id++}`;
+
+const DnDFlow = () => {
+  const reactFlowWrapper = useRef(null);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { screenToFlowPosition } = useReactFlow();
+  const [type] = useDnD();
+
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [],
+  );
+
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    console.log("drag over");
+    event.dataTransfer.dropEffect = 'move';
+    }, 
+    []
+  );
+
+  const onDrop = useCallback((event) => {
+    event.preventDefault();
+    console.log("dropped");
+
+    // check if the dropped element is valid
+    if (!type) {
+      return;
+    }
+
+    // project was renamed to screenToFlowPosition
+    // and you don't need to subtract the reactFlowBounds.left/top anymore
+    // details: https://reactflow.dev/whats-new/2023-11-10
+    const position = screenToFlowPosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
+    console.log('reactFlowWrapper:', reactFlowWrapper.current);
+
+    const newNode = {
+      id: getId(),
+      type,
+      position,
+      data: { label: `${type} node` },
+    };
+
+    setNodes((nds) => nds.concat(newNode));
+    },
+    [screenToFlowPosition, type],
+  );
 
   return (
-    <div className="page">
-      <div className="page">
-          <h1>GraphName</h1>
-          <div className="tab-group">
-            <button type="tab" >File</button>
-            <button type="tab" >Edit</button>
-            <button type="tab" >Analysis</button>
-          </div>
+    <div className="dndflow">
+      <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onDrop={(event) => onDrop(event)}
+          onDragOver={onDragOver}
+          fitView
+        >
+          <Controls />
+        </ReactFlow>
       </div>
-      <div className="row">
-          <div className="button-group">
-            <button type="button">Host</button>
-            <button type="button">Router</button>
-            <button type="button">Firewall</button>
-            <button type="button">Edge</button>
-          </div>
-          <div className="workspace">
-            <h3>Workspace</h3>
-          </div>
-          <div className="node-info">
-            <h3>Node</h3>
-          </div>
-      </div>
+      <Sidebar/>
     </div>
   );
-}
+};
 
-export default App;
+export default () => (
+  <ReactFlowProvider>
+    <DnDProvider>
+      <DnDFlow />
+    </DnDProvider>
+  </ReactFlowProvider>
+);

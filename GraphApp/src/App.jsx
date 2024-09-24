@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -7,8 +7,6 @@ import {
   useEdgesState,
   Controls,
   useReactFlow,
-  Background,
-  BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -43,59 +41,56 @@ const DnDFlow = () => {
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
-    console.log("drag over");
+    console.log("drag");
     event.dataTransfer.dropEffect = 'move';
-    }, 
-    []
-  );
+  }, []);
 
-  const onDrop = useCallback((event) => {
+  const handleDrop = (event) => {
     event.preventDefault();
-    console.log("dropped");
+    console.log("drop");
 
-    // check if the dropped element is valid
-    if (!type) {
+    const nodeType = event.dataTransfer.getData('application/reactflow');
+    console.log('Node type on drop:', nodeType);
+    
+    if (!nodeType) {
+      console.log("invalid node type");
       return;
     }
 
-    // project was renamed to screenToFlowPosition
-    // and you don't need to subtract the reactFlowBounds.left/top anymore
-    // details: https://reactflow.dev/whats-new/2023-11-10
     const position = screenToFlowPosition({
       x: event.clientX,
       y: event.clientY,
     });
-    console.log('reactFlowWrapper:', reactFlowWrapper.current);
 
     const newNode = {
       id: getId(),
-      type,
-      position,
-      data: { label: `${type} node` },
+      type: nodeType,
+      position: position,
+      data: { label: `${nodeType} node` },
     };
 
     setNodes((nds) => nds.concat(newNode));
-    },
-    [screenToFlowPosition, type],
-  );
+  };
 
   return (
     <div className="dndflow">
-      <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+      <div className={`reactflow-wrapper`} 
+        ref={reactFlowWrapper} 
+        onDrop={handleDrop} 
+        onDragOver={onDragOver}
+      >
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onDrop={(event) => onDrop(event)}
-          onDragOver={onDragOver}
           fitView
         >
           <Controls />
         </ReactFlow>
       </div>
-      <Sidebar/>
+      <Sidebar />
     </div>
   );
 };

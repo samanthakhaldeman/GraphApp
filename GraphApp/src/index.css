@@ -44,6 +44,14 @@
   .dndflow .selectall {
     margin-top: 10px;
   }
+
+  .reactflow-wrapper {
+    pointer-events: all; /* Make sure this allows interactions */
+  }
+
+  .dragging-over {
+    background-color: rgba(0, 255, 0, 0.1); /* Highlight when dragging over */
+  }
   
   @media screen and (min-width: 768px) {
     .dndflow {

@@ -12,11 +12,11 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
-import Sidebar from './Sidebar';
-import NodePopUp from './NodePopUp';
+import Sidebar from './components/Sidebar';
+import NodePopUp from './components/NodePopUp';
 import { DnDProvider, useDnD } from './DnDContext';
 
-import './index.css';
+import './styles/index.css';
 import hostPic from '/src/assets/host.png';
 import routerPic from '/src/assets/router.png';
 import firewallPic from '/src/assets/firewall.png';

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import Table from "./Table";
-import './index.css';
+import '../styles/index.css';
 
 const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange, closePopup }) => {
     const [selectedType, setSelectedType] = useState(node?.data.type || 'Host');

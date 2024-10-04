@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useDnD } from './DnDContext';
+import { useDnD } from '../DnDContext';
 
-import './index.css';
+import '../styles/index.css';
 
 export default () => {
   const [_, setType] = useDnD();

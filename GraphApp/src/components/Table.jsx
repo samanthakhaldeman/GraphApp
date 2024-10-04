@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import './index.css';
+import '../styles/index.css';
 
 const EditableTable = ({ nodeTable, onTableChange }) => {
   const [rows, setRows] = useState([{ property: '', value: '' }]); 

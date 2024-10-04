@@ -7,22 +7,21 @@ import {
   useEdgesState,
   Controls,
   useReactFlow,
+  Background,
+  BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 import Sidebar from './Sidebar';
+import NodePopUp from './NodePopUp';
 import { DnDProvider, useDnD } from './DnDContext';
 
 import './index.css';
+import hostPic from '/src/assets/host.png';
+import routerPic from '/src/assets/router.png';
+import firewallPic from '/src/assets/firewall.png';
 
-const initialNodes = [
-  {
-    id: '1',
-    type: 'input',
-    data: { label: 'input node' },
-    position: { x: 250, y: 5 },
-  },
-];
+const initialNodes = [];
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -32,12 +31,84 @@ const DnDFlow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { screenToFlowPosition } = useReactFlow();
-  const [type] = useDnD();
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
+
+  const getImage = (type) => {
+    var image;
+    if (type == 'Host') {
+      image = hostPic;
+    }
+    else if (type == 'Router') {
+      image = routerPic;
+    }
+    else {
+      image = firewallPic;
+    }
+    return image;
+  }
+
+  // Handle node click event
+  const onNodeClick = (event, node) => {
+    setSelectedNode(node);
+  };
+
+  const handleNodeDoubleClick = (event, node) => {
+    const nodePosition = event.target.getBoundingClientRect();
+    setSelectedNode(node); // Update the selected node
+    setPopUpPosition({
+      x: nodePosition.right + 10, // Adjust x position next to the node
+      y: nodePosition.top, // Adjust y position
+    });
+  };
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [],
   );
+
+  const handleLabelChange = (newName) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === selectedNode.id) {
+          return {
+            ...node,
+            data: { ...node.data, label: newName},
+          };
+        }
+        return node;
+      })
+    );
+  };
+
+  const handleTypeChange = (newType) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === selectedNode.id) {
+          var newImage = getImage(newType);
+          return {
+            ...node,
+            data: {...node.data, type: newType, image: newImage},
+          };
+        }
+        return node;
+      })
+    );
+  };
+
+  const handleTableChange = (newTable) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === selectedNode.id) {
+          return {
+            ...node,
+            data: {...node.data, table: newTable},
+          };
+        }
+        return node;
+      })
+    );
+  }
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -49,8 +120,9 @@ const DnDFlow = () => {
     event.preventDefault();
     console.log("drop");
 
-    const nodeType = event.dataTransfer.getData('application/reactflow');
-    console.log('Node type on drop:', nodeType);
+    const nodeType = event.dataTransfer.getData('application/reactflow/type');
+    const name = event.dataTransfer.getData('application/reactflow/name');
+    const image = getImage('Host');
     
     if (!nodeType) {
       console.log("invalid node type");
@@ -66,14 +138,32 @@ const DnDFlow = () => {
       id: getId(),
       type: nodeType,
       position: position,
-      data: { label: `${nodeType} node` },
+      data: { label: `${name}`, image: `${image}`, type: 'Host', table: [{ property: 'p1', value: 'v1' }]},
+      sourcePosition: 'right',
+      targetPosition: 'left',
+      style: {
+        borderRadius: '50%', 
+        width: '80px', 
+        height: '80px',
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        overflow: 'hidden',
+      },
+      onclick: {onNodeClick}
+      
     };
 
     setNodes((nds) => nds.concat(newNode));
   };
 
+  const closePopup = () => {
+    setSelectedNode(null); // Clear selected node to hide popup
+  };
+
   return (
     <div className="dndflow">
+      <Sidebar />
       <div className={`reactflow-wrapper`} 
         ref={reactFlowWrapper} 
         onDrop={handleDrop} 
@@ -84,13 +174,23 @@ const DnDFlow = () => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onNodeClick={onNodeClick}
+          onNodeDoubleClick={handleNodeDoubleClick}
           onConnect={onConnect}
           fitView
         >
-          <Controls />
+          <Background 
+            color="#555"
+            variant={BackgroundVariant.Dots} 
+            gap={30} 
+            size={2} 
+          />
+          <Controls/>
         </ReactFlow>
       </div>
-      <Sidebar />
+      <div>
+				{selectedNode && <NodePopUp node={selectedNode} position={popUpPosition} onLabelChange={handleLabelChange} onTypeChange={handleTypeChange} onTableChange={handleTableChange} closePopup={closePopup} />}
+			</div>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import '../styles/index.css';
 
 const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange, closePopup }) => {
     const [selectedType, setSelectedType] = useState(node?.data.type || 'Host');
+	const [activeTab, setActiveTab] = useState('system');
 	const popupRef = useRef(); 
 
 	
@@ -43,6 +44,27 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 
 	const { x, y } = position; 
 
+	const renderTabContent = () => {
+		switch (activeTab) {
+		  case 'system':
+			return (
+			  <div>
+				<h3>System Properties</h3>
+				<Table nodeTable={node.data.systemTable} onTableChange={onTableChange} tableType={activeTab} />
+			  </div>
+			);
+		  case 'vulnerability':
+			return (
+			  <div>
+				<h3>Vulnerability Properties</h3>
+				<Table nodeTable={node.data.vulnerabilityTable} onTableChange={onTableChange} tableType={activeTab} />
+			  </div>
+			);
+		  default:
+			return null;
+		}
+	  };
+
 	return (
 		<div ref={popupRef} className='node-pop-up'
 		style={{
@@ -72,7 +94,16 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 				id: {node.id}
 			</label>
 			{node.data.image && <img src={node.data.image} style={{ width: '50px', height: '50px', marginTop: '10px' }} />}
-			<Table nodeTable={node.data.table} onTableChange={onTableChange} />
+			<h3>Node Properties</h3>
+			<div>
+				<button className="tab" onClick={() => setActiveTab('system')} style={{ marginRight: '5px' }}>
+				System
+				</button>
+				<button className="tab" onClick={() => setActiveTab('vulnerability')}>
+				Vulnerability
+				</button>
+			</div>
+			{renderTabContent()}
 		</div>
 	);
 };

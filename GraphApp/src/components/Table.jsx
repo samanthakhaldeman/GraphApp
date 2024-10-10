@@ -2,24 +2,37 @@ import React, { useState, useEffect } from 'react';
 
 import '../styles/index.css';
 
-const EditableTable = ({ nodeTable, onTableChange }) => {
-  const [rows, setRows] = useState([{ property: '', value: '' }]); 
+const EditableTable = ({ nodeTable, onTableChange, tableType }) => {
+  const [SRows, setSRows] = useState([{ property: '', value: '' }]);
+  const [VRows, setVRows] = useState([{ property: '', value: '' }]); 
 
   useEffect(() => {
-    setRows( nodeTable || [{ key: '', value: '' }]);
+    setSRows( nodeTable || [{ key: '', value: '' }]);
+	setVRows( nodeTable || [{ key: '', value: '' }]);
   }, [nodeTable]);
   
   const handleRowChange = (index, field, value) => {
 	const updatedRows = [...nodeTable]; 
 	updatedRows[index][field] = value; 
-	setRows(updatedRows); 
-	onTableChange(updatedRows);
+	if (tableType == "system") {
+		setSRows(updatedRows);
+	}
+	else {
+		setVRows(updatedRows);
+	}
+	onTableChange(tableType, updatedRows);
   };
 
   const handleAddRow = () => {
 	console.log("add row");
-	setRows([...nodeTable, { property: '', value: '' }]); 
-	onTableChange(rows);
+	if (tableType == "system") {
+		setSRows([...nodeTable, { property: '', value: '' }]); 
+		onTableChange(tableType, SRows);
+	}
+	else {
+		setVRows([...nodeTable, { property: '', value: '' }]);
+		onTableChange(tableType, VRows);
+	}
   }; 
 
   return (
@@ -54,7 +67,7 @@ const EditableTable = ({ nodeTable, onTableChange }) => {
 	  </table>
 	  
 	  {/* Button to add a new row */}
-	  <button onClick={handleAddRow} style={{ marginTop: '10px' }}>
+	  <button onClick={handleAddRow} className='button'>
 		Add Row
 	  </button>
 	</div>

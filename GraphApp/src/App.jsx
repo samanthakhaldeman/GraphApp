@@ -96,14 +96,22 @@ const DnDFlow = () => {
     );
   };
 
-  const handleTableChange = (newTable) => {
+  const handleTableChange = ( tableType, newTable) => {
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === selectedNode.id) {
-          return {
-            ...node,
-            data: {...node.data, table: newTable},
-          };
+          if (tableType == "system") {
+            return {
+              ...node,
+              data: {...node.data, systemTable: newTable},
+            };
+          }
+          else {
+            return {
+              ...node,
+              data: {...node.data, vulnerabilityTable: newTable},
+            };
+          }
         }
         return node;
       })
@@ -138,7 +146,7 @@ const DnDFlow = () => {
       id: getId(),
       type: nodeType,
       position: position,
-      data: { label: `${name}`, image: `${image}`, type: 'Host', table: [{ property: 'p1', value: 'v1' }]},
+      data: { label: `${name}`, image: `${image}`, type: 'Host', systemTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{property: 'p1', value: 'v1'}]},
       sourcePosition: 'right',
       targetPosition: 'left',
       style: {

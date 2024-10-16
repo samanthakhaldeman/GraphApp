@@ -26,12 +26,15 @@
     width: 80px;
     color: #eee;
     border: 1px solid #eee;
-    border-radius: '50%';
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: grab;
     overflow: 'hidden';
+}
+
+.dndnode {
+    background-color: #444;
 }
 
 .dndflow .reactflow-wrapper {
@@ -49,7 +52,7 @@
     background-color: #222;
 }
 
-.node-pop-up {
+.pop-up {
     border: 1px solid #eee;
     padding: 15px 10px;
     font-size: 12px;
@@ -58,6 +61,18 @@
     display: flex;
     flex-direction: column;
     border-radius: 5px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 input, select, button {
@@ -69,6 +84,14 @@ input, select, button {
     padding: 5px;
     border-radius: 5px;
     border-color:#222;
+}
+
+.top {
+    background: #555;
+}
+
+input {
+    height: 15px;
 }
 
 .tab {

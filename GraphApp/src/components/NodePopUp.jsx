@@ -22,13 +22,6 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 		};
 	}, [closePopup]);
 
-    // useEffect(() => {
-    //     if (node) {
-    //         setInputValue(node.data.label);
-    //         setSelectedType(node.data.type || 'Host');
-    //     }
-    // }, [node]);
-
     const handleInputEnter = (e) => {
         if (e.key === 'Enter') {
             onLabelChange(e.target.value); 
@@ -43,21 +36,22 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 	if (!node) return null; 
 
 	const { x, y } = position; 
+	console.log(typeof node.data.systemTable);
 
 	const renderTabContent = () => {
 		switch (activeTab) {
 		  case 'system':
 			return (
 			  <div>
-				<h3>System Properties</h3>
-				<Table nodeTable={node.data.systemTable} onTableChange={onTableChange} tableType={activeTab} />
+				<strong>System Properties</strong>
+				<Table table={node.data.systemTable} onTableChange={onTableChange} tableType={activeTab} />
 			  </div>
 			);
 		  case 'vulnerability':
 			return (
 			  <div>
-				<h3>Vulnerability Properties</h3>
-				<Table nodeTable={node.data.vulnerabilityTable} onTableChange={onTableChange} tableType={activeTab} />
+				<strong>Vulnerability Properties</strong>
+				<Table table={node.data.vulnerabilityTable} onTableChange={onTableChange} tableType={activeTab} />
 			  </div>
 			);
 		  default:
@@ -66,30 +60,47 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 	  };
 
 	return (
-		<div ref={popupRef} className='node-pop-up'
+		<div ref={popupRef} className='pop-up'
 		style={{
 			position: 'absolute',
 			top: `${y}px`,
 			left: `${x}px`,
-			zIndex: 1000, 
+			zIndex: 1000,
+			width: '300px',  
 		}}
 		>
-			<label>
-				<strong>Label:</strong>
-				<input
-					type="text"
-					defaultValue={node.data.label}
-					onKeyDown={(e) => handleInputEnter(e)}
-				/>
-			</label>
-			<label style={{ display: 'block', marginTop: '10px' }}>
-				<strong>Type:</strong>
-				<select value={selectedType} onChange={handleTypeChange} style={{ marginLeft: '10px', padding: '5px' }}>
+			<div className="row">
+				<div className="row">
+					<h3>Label:</h3>
+					<input
+						type="text"
+						defaultValue={node.data.label}
+						onKeyDown={(e) => handleInputEnter(e)}
+					/>
+				</div>
+				<button className="regular" 
+				style={{
+					marginRight: '-7px',
+					marginTop: '-10px', 
+					marginLeft: '115px',
+					borderRadius: '50%', 
+					width: '25px',
+					height: '25px',
+					justifyContent: 'center', 
+				}}
+				onClick={closePopup}
+				>
+					X
+				</button>
+			</div>
+			<div className='row' style={{ marginTop: '5px' }}>
+				<h3>Type:</h3>
+				<select value={selectedType} onChange={handleTypeChange} style={{ marginLeft: '5px', padding: '5px' }}>
 					<option value="Host">Host</option>
 					<option value="Router">Router</option>
 					<option value="Firewall">Firewall</option>
 				</select>
-			</label>
+			</div>
 			<label>
 				id: {node.id}
 			</label>

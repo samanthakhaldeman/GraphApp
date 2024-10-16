@@ -14,6 +14,7 @@ import '@xyflow/react/dist/style.css';
 
 import Sidebar from './components/Sidebar';
 import NodePopUp from './components/NodePopUp';
+import EdgePopUp from './components/EdgePopUp';
 import { DnDProvider, useDnD } from './DnDContext';
 
 import './styles/index.css';
@@ -32,6 +33,7 @@ const DnDFlow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { screenToFlowPosition } = useReactFlow();
   const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedEdge, setSelectedEdge] = useState(null);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
   const getImage = (type) => {
@@ -51,7 +53,14 @@ const DnDFlow = () => {
   // Handle node click event
   const onNodeClick = (event, node) => {
     setSelectedNode(node);
+    setSelectedEdge(null);
   };
+
+  const onEdgeClick = (event, edge) => {
+    console.log("edge selected");
+    setSelectedEdge(edge);
+    setSelectedNode(null);
+  }
 
   const handleNodeDoubleClick = (event, node) => {
     const nodePosition = event.target.getBoundingClientRect();
@@ -62,12 +71,21 @@ const DnDFlow = () => {
     });
   };
 
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [],
+  const handleEdgeDoubleClick = (event, edge) => {
+    const edgePosition = event.target.getBoundingClientRect();
+    setSelectedEdge(edge); // Update the selected node
+    setPopUpPosition({
+      x: edgePosition.right + 10, // Adjust x position next to the node
+      y: edgePosition.top, // Adjust y position
+    });
+  }
+
+  const onConnect = (params) =>
+    setEdges((eds) =>
+      addEdge({ ...params, data: { label: '', onLabelChange: handleEdgeLabelChange, connectivityTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{ property: 'p1', value: 'v1' }] } }, eds)
   );
 
-  const handleLabelChange = (newName) => {
+  const handleNodeLabelChange = (newName) => {
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === selectedNode.id) {
@@ -77,6 +95,20 @@ const DnDFlow = () => {
           };
         }
         return node;
+      })
+    );
+  };
+
+  const handleEdgeLabelChange = (newName) => {
+    setEdges((edgs) =>
+      edgs.map((edge) => {
+        if (edge.id === selectedEdge.id) {
+          return {
+            ...edge,
+            data: { ...edge.data, label: newName},
+          };
+        }
+        return edge;
       })
     );
   };
@@ -96,7 +128,7 @@ const DnDFlow = () => {
     );
   };
 
-  const handleTableChange = ( tableType, newTable) => {
+  const handleNodeTableChange = ( tableType, newTable) => {
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === selectedNode.id) {
@@ -114,6 +146,28 @@ const DnDFlow = () => {
           }
         }
         return node;
+      })
+    );
+  };
+
+  const handleEdgeTableChange = ( tableType, newTable) => {
+    setEdges((edgs) =>
+      edgs.map((edge) => {
+        if (edge.id === selectedEdge.id) {
+          if (tableType == "connectivity") {
+            return {
+              ...edge,
+              data: {...edge.data, connectivityTable: newTable},
+            };
+          }
+          else {
+            return {
+              ...edge,
+              data: {...edge.data, vulnerabilityTable: newTable},
+            };
+          }
+        }
+        return edge;
       })
     );
   }
@@ -157,6 +211,7 @@ const DnDFlow = () => {
         justifyContent: 'center', 
         alignItems: 'center',
         overflow: 'hidden',
+        backgroundColor: '#eee',
       },
       onclick: {onNodeClick}
       
@@ -167,38 +222,51 @@ const DnDFlow = () => {
 
   const closePopup = () => {
     setSelectedNode(null); // Clear selected node to hide popup
+    setSelectedEdge(null);
   };
 
   return (
-    <div className="dndflow">
-      <Sidebar />
-      <div className={`reactflow-wrapper`} 
-        ref={reactFlowWrapper} 
-        onDrop={handleDrop} 
-        onDragOver={onDragOver}
-      >
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onNodeClick={onNodeClick}
-          onNodeDoubleClick={handleNodeDoubleClick}
-          onConnect={onConnect}
-          fitView
-        >
-          <Background 
-            color="#555"
-            variant={BackgroundVariant.Dots} 
-            gap={30} 
-            size={2} 
-          />
-          <Controls/>
-        </ReactFlow>
+    <div className="dndflow" style={{display: 'flex', flexDirection: 'column'}}>
+      <div className='row' style={{height: '5vh', background: '#444'}}>
+        <button className='button top'>New</button>
+        <button className='button top'>Load</button>
+        <button className='button top'>Save</button>
       </div>
-      <div>
-				{selectedNode && <NodePopUp node={selectedNode} position={popUpPosition} onLabelChange={handleLabelChange} onTypeChange={handleTypeChange} onTableChange={handleTableChange} closePopup={closePopup} />}
-			</div>
+      <div className='row' style={{height: '95vh', gap: '0px'}}>
+        <Sidebar />
+        <div className={`reactflow-wrapper`} 
+          ref={reactFlowWrapper} 
+          onDrop={handleDrop} 
+          onDragOver={onDragOver}
+        >
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onNodeClick={onNodeClick}
+            onEdgeClick={onEdgeClick}
+            onNodeDoubleClick={handleNodeDoubleClick}
+            onEdgeDoubleClick={handleEdgeDoubleClick}
+            onConnect={onConnect}
+            fitView
+          >
+            <Background 
+              color="#555"
+              variant={BackgroundVariant.Dots} 
+              gap={30} 
+              size={2} 
+            />
+            <Controls/>
+          </ReactFlow>
+        </div>
+        <div>
+          {selectedNode && <NodePopUp node={selectedNode} position={popUpPosition} onLabelChange={handleNodeLabelChange} onTypeChange={handleTypeChange} onTableChange={handleNodeTableChange} closePopup={closePopup} />}
+        </div>
+        <div>
+          {selectedEdge && <EdgePopUp edge={selectedEdge} position={popUpPosition} onLabelChange={handleEdgeLabelChange} onTableChange={handleEdgeTableChange} closePopup={closePopup} />}
+        </div>
+      </div>
     </div>
   );
 };

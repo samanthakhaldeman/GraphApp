@@ -18,8 +18,13 @@ export default () => {
 
   return (
     <aside>
-      <div className="description">You can drag these nodes to the pane on the right.</div>
-      <div className="dndnode" onDragStart={(event) => onDragStart(event,'default','Node')} draggable="true">
+      <h3>You can drag these nodes to the pane on the right.</h3>
+      <div className="dndnode" 
+      onDragStart={(event) => onDragStart(event,'default','Node')} 
+      draggable="true"
+      style={{
+        borderRadius: '50%'
+      }}>
         Node
       </div>
     </aside>

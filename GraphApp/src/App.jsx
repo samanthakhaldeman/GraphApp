@@ -11,10 +11,12 @@ import {
   BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { writeTextFile, BaseDirectory } from '@tauri-apps/api/fs';
 
 import Sidebar from './components/Sidebar';
 import NodePopUp from './components/NodePopUp';
 import EdgePopUp from './components/EdgePopUp';
+import HamburgerMenu from './components/HamburgerMenu';
 import { DnDProvider, useDnD } from './DnDContext';
 
 import './styles/index.css';
@@ -34,6 +36,7 @@ const DnDFlow = () => {
   const { screenToFlowPosition } = useReactFlow();
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
   const getImage = (type) => {
@@ -225,47 +228,69 @@ const DnDFlow = () => {
     setSelectedEdge(null);
   };
 
+  const toggleMenu = () => {
+    setMenuIsOpen(!menuIsOpen);
+  };
+
+  const saveGraph = async () => {
+    console.log("saving...");
+    const graphData = {
+      nodes: nodes.map(node => ({ id: node.id, data: node.data, position: node.position, type: node.type })),
+      edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, data: edge.data })),
+    };
+    const json = JSON.stringify(graphData, null, 2);
+    console.log(json);
+
+    const fileName = window.prompt("Enter a name for your graph file:", "graph");
+
+    if (fileName) {
+      try {
+        // Write the file to the user's file system using Tauri's fs API
+        await writeTextFile(`${fileName}.json`, json, { dir: BaseDirectory.Desktop });
+        alert(`File saved as ${fileName}.json on your desktop!`);
+      } catch (error) {
+        console.error("Failed to save the file:", error);
+        alert("Failed to save the file. Please try again.");
+      }
+    }
+  };
+
+
   return (
-    <div className="dndflow" style={{display: 'flex', flexDirection: 'column'}}>
-      <div className='row' style={{height: '5vh', background: '#444'}}>
-        <button className='button top'>New</button>
-        <button className='button top'>Load</button>
-        <button className='button top'>Save</button>
-      </div>
-      <div className='row' style={{height: '95vh', gap: '0px'}}>
-        <Sidebar />
-        <div className={`reactflow-wrapper`} 
-          ref={reactFlowWrapper} 
-          onDrop={handleDrop} 
-          onDragOver={onDragOver}
+    <div className="dndflow">
+      {!menuIsOpen && <Sidebar openMenu={toggleMenu}/>}
+      {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} saveGraph={saveGraph} />}
+      <div className={`reactflow-wrapper`} 
+        ref={reactFlowWrapper} 
+        onDrop={handleDrop} 
+        onDragOver={onDragOver}
+      >
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onNodeClick={onNodeClick}
+          onEdgeClick={onEdgeClick}
+          onNodeDoubleClick={handleNodeDoubleClick}
+          onEdgeDoubleClick={handleEdgeDoubleClick}
+          onConnect={onConnect}
+          fitView
         >
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeClick={onNodeClick}
-            onEdgeClick={onEdgeClick}
-            onNodeDoubleClick={handleNodeDoubleClick}
-            onEdgeDoubleClick={handleEdgeDoubleClick}
-            onConnect={onConnect}
-            fitView
-          >
-            <Background 
-              color="#555"
-              variant={BackgroundVariant.Dots} 
-              gap={30} 
-              size={2} 
-            />
-            <Controls/>
-          </ReactFlow>
-        </div>
-        <div>
-          {selectedNode && <NodePopUp node={selectedNode} position={popUpPosition} onLabelChange={handleNodeLabelChange} onTypeChange={handleTypeChange} onTableChange={handleNodeTableChange} closePopup={closePopup} />}
-        </div>
-        <div>
-          {selectedEdge && <EdgePopUp edge={selectedEdge} position={popUpPosition} onLabelChange={handleEdgeLabelChange} onTableChange={handleEdgeTableChange} closePopup={closePopup} />}
-        </div>
+          <Background 
+            color="#555"
+            variant={BackgroundVariant.Dots} 
+            gap={30} 
+            size={2} 
+          />
+          <Controls/>
+        </ReactFlow>
+      </div>
+      <div>
+        {selectedNode && <NodePopUp node={selectedNode} position={popUpPosition} onLabelChange={handleNodeLabelChange} onTypeChange={handleTypeChange} onTableChange={handleNodeTableChange} closePopup={closePopup} />}
+      </div>
+      <div>
+        {selectedEdge && <EdgePopUp edge={selectedEdge} position={popUpPosition} onLabelChange={handleEdgeLabelChange} onTableChange={handleEdgeTableChange} closePopup={closePopup} />}
       </div>
     </div>
   );

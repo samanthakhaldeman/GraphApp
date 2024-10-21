@@ -1,9 +1,16 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { tauri } from "vite-plugin-tauri";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react()],
+  plugins: [react(), tauri()],
+  resolve: {
+    alias: {
+      '@': '/src',
+      '@tauri-apps/api': '/node_modules/@tauri-apps/api'
+    }
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

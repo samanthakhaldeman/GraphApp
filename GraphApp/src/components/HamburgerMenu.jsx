@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/index.css';
 
-const HamburgerMenu = ({closeMenu, saveGraph}) => {
+const HamburgerMenu = ({closeMenu, saveGraph, loadGraph}) => {
 
   return (
     <div className="hamburger-menu">
@@ -22,7 +22,7 @@ const HamburgerMenu = ({closeMenu, saveGraph}) => {
         </button>
         <button>New</button>
         <button onClick={saveGraph}>Save</button>
-        <button>Load</button>
+        <button onClick={loadGraph}>Load</button>
     </div>
   );
 };

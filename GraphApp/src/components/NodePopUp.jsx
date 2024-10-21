@@ -104,7 +104,7 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 			<label>
 				id: {node.id}
 			</label>
-			{node.data.image && <img src={node.data.image} style={{ width: '50px', height: '50px', marginTop: '10px' }} />}
+			{node.data.image && <img src={node.data.image} className="node-image" />}
 			<h3>Node Properties</h3>
 			<div>
 				<button className="tab" onClick={() => setActiveTab('system')} style={{ marginRight: '5px' }}>

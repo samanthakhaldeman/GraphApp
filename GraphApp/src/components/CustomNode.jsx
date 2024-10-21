@@ -1,20 +1,33 @@
 import React from 'react';
-import { Handle } from 'reactflow';
+import { Handle, Position, ReactFlowProvider, useReactFlow } from 'reactflow';
 
-const HighlightNode = ({ data, selected }) => {
-    // Define the style for the node
-    const nodeStyle = {
-      padding: '10px',
-      borderRadius: '5px',
-      border: selected ? '2px solid blue' : '1px solid gray', // Highlight when selected
-      backgroundColor: selected ? '#e0f7ff' : '#fff', // Different background color when selected
-    };
-  
-    return (
-      <div style={nodeStyle}>
-        <div>{data.label}</div>
-        <Handle type="source" position="right" />
-        <Handle type="target" position="left" />
-      </div>
-    );
+import '../styles/index.css';
+
+const CustomNode = ({id, data}) => {
+  console.log(id);
+  if (!id) {
+    console.warn('Custom Node rendered without a valid id.');
+    return null;
+  }
+
+  return (
+    <div className='custom-node'>
+      <img src={data.image} className='node-image'></img>
+      <div className='node-label'>{data.label}</div>
+      <Handle
+        type="target" 
+        position={Position.Left}
+        style={{background:'#eee'}}
+        id='input'
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{background:'#eee'}}
+        id='output'
+      />
+    </div>
+  );
 };
+
+export default CustomNode;

@@ -1,7 +1,6 @@
 import React, { useRef, useCallback, useState } from 'react';
+import ReactFlow, { ReactFlowProvider } from 'reactflow';
 import {
-  ReactFlow,
-  ReactFlowProvider,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -11,33 +10,44 @@ import {
   BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { writeTextFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { writeTextFile, readTextFile } from '@tauri-apps/api/fs';
+import { save, open } from '@tauri-apps/api/dialog';
 
-import Sidebar from './components/Sidebar';
-import NodePopUp from './components/NodePopUp';
-import EdgePopUp from './components/EdgePopUp';
-import HamburgerMenu from './components/HamburgerMenu';
-import { DnDProvider, useDnD } from './DnDContext';
+import useStore from '../store';
+import CustomNode from './CustomNode';
+import Sidebar from './Sidebar';
+import NodePopUp from './NodePopUp';
+import EdgePopUp from './EdgePopUp';
+import HamburgerMenu from './HamburgerMenu';
+import { DnDProvider, useDnD } from '../DnDContext';
 
-import './styles/index.css';
+import '../styles/index.css';
 import hostPic from '/src/assets/host.png';
 import routerPic from '/src/assets/router.png';
 import firewallPic from '/src/assets/firewall.png';
 
-const initialNodes = [];
-
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
-const DnDFlow = () => {
+const FlowComponent= () => {
   const reactFlowWrapper = useRef(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { nodes, edges, setNodes, setEdges } = useStore();
   const { screenToFlowPosition } = useReactFlow();
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
+
+  const nodeTypes = {
+    custom: CustomNode,
+  };
+
+  const useStore = create((set) => ({
+    nodes: [],
+    edges: [],
+    setNodes: (nodes) => set({ nodes }),
+    setEdges: (edges) => set({ edges }),
+  }));
 
   const getImage = (type) => {
     var image;
@@ -206,16 +216,6 @@ const DnDFlow = () => {
       data: { label: `${name}`, image: `${image}`, type: 'Host', systemTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{property: 'p1', value: 'v1'}]},
       sourcePosition: 'right',
       targetPosition: 'left',
-      style: {
-        borderRadius: '50%', 
-        width: '80px', 
-        height: '80px',
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        overflow: 'hidden',
-        backgroundColor: '#eee',
-      },
       onclick: {onNodeClick}
       
     };
@@ -234,32 +234,58 @@ const DnDFlow = () => {
 
   const saveGraph = async () => {
     console.log("saving...");
-    const graphData = {
-      nodes: nodes.map(node => ({ id: node.id, data: node.data, position: node.position, type: node.type })),
-      edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, data: edge.data })),
-    };
-    const json = JSON.stringify(graphData, null, 2);
-    console.log(json);
+    try {
+      const filePath = await save({
+        defualtPath: "graph.json",
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
+      });
 
-    const fileName = window.prompt("Enter a name for your graph file:", "graph");
+      if (filePath) {
+        const graphData = {
+          nodes: nodes.map(node => ({ id: node.id, data: node.data, position: node.position, type: node.type })),
+          edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, data: edge.data })),
+        };
+        
+        const json = JSON.stringify(graphData, null, 2);
 
-    if (fileName) {
-      try {
-        // Write the file to the user's file system using Tauri's fs API
-        await writeTextFile(`${fileName}.json`, json, { dir: BaseDirectory.Desktop });
-        alert(`File saved as ${fileName}.json on your desktop!`);
-      } catch (error) {
-        console.error("Failed to save the file:", error);
-        alert("Failed to save the file. Please try again.");
-      }
+        await writeTextFile(filePath, json);
+        alert('FIle saved successfully as ${filePath}');
+      };
+    } catch (error) {
+      console.error("Failed to save the file: ", error);
+      alert("Failed to save the file. Please try again.");
     }
   };
+
+  const loadGraph = async () => {
+    try {
+      const filePath = await open({
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
+      });
+
+      if (filePath) {
+        const fileContent = await readTextFile(filePath);
+
+        const graphData = JSON.parse(fileContent);
+
+        if (graphData.nodes && graphData.edges) {
+          setNodes(graphData.nodes);
+          setEdges(graphData.edges);
+        } else {
+          alert("Invalid graph data. Please check the file format.");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load the graph:", error);
+      alert("Failed to load the graph. Please try again.");
+    }
+  }
 
 
   return (
     <div className="dndflow">
       {!menuIsOpen && <Sidebar openMenu={toggleMenu}/>}
-      {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} saveGraph={saveGraph} />}
+      {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} saveGraph={saveGraph} loadGraph={loadGraph} />}
       <div className={`reactflow-wrapper`} 
         ref={reactFlowWrapper} 
         onDrop={handleDrop} 
@@ -268,6 +294,7 @@ const DnDFlow = () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
@@ -299,7 +326,7 @@ const DnDFlow = () => {
 export default () => (
   <ReactFlowProvider>
     <DnDProvider>
-      <DnDFlow />
+      <FlowComponent />
     </DnDProvider>
   </ReactFlowProvider>
 );

@@ -5,8 +5,9 @@
   "identifier": "com.tauri.dev",
   "build": {
     "frontendDist": "../build",
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build"
+    "devUrl": "http://localhost:3000",
+    "beforeDevCommand": "yarn dev",
+    "beforeBuildCommand": "yarn build"
   },
   "app": {
     "windows": [

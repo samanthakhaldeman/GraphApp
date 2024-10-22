@@ -2,8 +2,8 @@ import { create } from 'zustand';
 const useStore = create((set) => ({
   nodes: [],
   edges: [],
-  setNodes: (nodes) => set({ nodes }),
-  setEdges: (edges) => set({ edges }),
+  setNodes: (newNodes) => set({ newNodes }),
+  setEdges: (newEdges) => set({ newEdges }),
 }));
 
 export default useStore

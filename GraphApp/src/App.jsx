@@ -9,8 +9,8 @@ import {
   BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { writeTextFile, readTextFile } from '@tauri-apps/api/fs';
-import { save, open } from '@tauri-apps/api/dialog';
+// import { writeTextFile, readTextFile } from '@tauri-apps/api/fs';
+// import { save, open } from '@tauri-apps/api/dialog';
 import ErrorBoundary from './ErrorBoundary';
 
 import CustomNode from './components/CustomNode';
@@ -38,9 +38,9 @@ const FlowComponent= () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
-  const nodeTypes = {
-    custom: CustomNode,
-  };
+  // const nodeTypes = {
+  //   custom: CustomNode,
+  // };
 
   const getImage = (type) => {
     var image;
@@ -229,8 +229,13 @@ const FlowComponent= () => {
       onclick: {onNodeClick}
       
     };
+    console.log("new node created");
+
+    console.log(typeof setNodes);
 
     setNodes((nds) => nds.concat(newNode));
+
+    console.log('new node added');
   };
 
   const closePopup = () => {
@@ -242,60 +247,61 @@ const FlowComponent= () => {
     setMenuIsOpen(!menuIsOpen);
   };
 
-  const saveGraph = async () => {
-    console.log("saving...");
-    try {
-      const filePath = await save({
-        defaultPath: "graph.json",
-        filters: [{ name: 'JSON Files', extensions: ['json'] }]
-      });
+  // const saveGraph = async () => {
+  //   console.log("saving...");
+  //   try {
+  //     const filePath = await save({
+  //       defaultPath: "graph.json",
+  //       filters: [{ name: 'JSON Files', extensions: ['json'] }]
+  //     });
 
-      if (filePath) {
-        const graphData = {
-          nodes: nodes.map(node => ({ id: node.id, data: node.data, position: node.position, type: node.type })),
-          edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, data: edge.data })),
-        };
+  //     if (filePath) {
+  //       const graphData = {
+  //         nodes: nodes.map(node => ({ id: node.id, data: node.data, position: node.position, type: node.type })),
+  //         edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, data: edge.data })),
+  //       };
         
-        const json = JSON.stringify(graphData, null, 2);
+  //       const json = JSON.stringify(graphData, null, 2);
 
-        await writeTextFile(filePath, json);
-        alert('FIle saved successfully as ${filePath}');
-      };
-    } catch (error) {
-      console.error("Failed to save the file: ", error);
-      alert("Failed to save the file. Please try again.");
-    }
-  };
+  //       await writeTextFile(filePath, json);
+  //       alert('FIle saved successfully as ${filePath}');
+  //     };
+  //   } catch (error) {
+  //     console.error("Failed to save the file: ", error);
+  //     alert("Failed to save the file. Please try again.");
+  //   }
+  // };
 
-  const loadGraph = async () => {
-    try {
-      const filePath = await open({
-        filters: [{ name: 'JSON Files', extensions: ['json'] }]
-      });
+  // const loadGraph = async () => {
+  //   try {
+  //     const filePath = await open({
+  //       filters: [{ name: 'JSON Files', extensions: ['json'] }]
+  //     });
 
-      if (filePath) {
-        const fileContent = await readTextFile(filePath);
+  //     if (filePath) {
+  //       const fileContent = await readTextFile(filePath);
 
-        const graphData = JSON.parse(fileContent);
+  //       const graphData = JSON.parse(fileContent);
 
-        if (graphData.nodes && graphData.edges) {
-          setNodes(graphData.nodes);
-          setEdges(graphData.edges);
-        } else {
-          alert("Invalid graph data. Please check the file format.");
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load the graph:", error);
-      alert("Failed to load the graph. Please try again.");
-    }
-  }
+  //       if (graphData.nodes && graphData.edges) {
+  //         setNodes(graphData.nodes);
+  //         setEdges(graphData.edges);
+  //       } else {
+  //         alert("Invalid graph data. Please check the file format.");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to load the graph:", error);
+  //     alert("Failed to load the graph. Please try again.");
+  //   }
+  // }
 
 
   return (
     <div className="dndflow">
       {!menuIsOpen && <Sidebar openMenu={toggleMenu}/>}
-      {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} saveGraph={saveGraph} loadGraph={loadGraph} />}
+      {/* {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} saveGraph={saveGraph} loadGraph={loadGraph} />} */}
+      {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu}/>}
       <div className={`reactflow-wrapper`} 
         ref={reactFlowWrapper} 
         onDrop={(event) => handleDrop(event)}
@@ -304,7 +310,7 @@ const FlowComponent= () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          nodeTypes={nodeTypes}
+          //nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}

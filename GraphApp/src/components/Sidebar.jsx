@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useDnD } from '../DnDContext';
-import HamburgerMenu from './HamburgerMenu';
 
 import '../styles/index.css';
 
@@ -9,6 +8,7 @@ export default ({openMenu}) => {
   const [name, setName] = useState();
 
   const onDragStart = (event, nodeType, nodeName) => {
+    console.log("start drag");
     setType(nodeType);
     setName(nodeName);
 
@@ -25,8 +25,8 @@ export default ({openMenu}) => {
         <div className="bar"></div>
       </button>
       <h3 style={{marginTop: '60px', marginBottom: '15px'}}>You can drag these nodes to the pane on the right.</h3>
-      <div className="dndnode" 
-      onDragStart={(event) => onDragStart(event,'default','Node')} 
+      <div className="custom-node" 
+      onDragStart={(event) => onDragStart(event,'custom','Node')} 
       draggable="true"
       style={{
         borderRadius: '50%'

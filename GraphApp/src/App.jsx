@@ -1,9 +1,8 @@
 import React, { useRef, useCallback, useState } from 'react';
-import ReactFlow, { ReactFlowProvider } from 'reactflow';
+import ReactFlow from 'reactflow';
 import {
+  ReactFlowProvider,
   addEdge,
-  useNodesState,
-  useEdgesState,
   Controls,
   useReactFlow,
   Background,
@@ -12,8 +11,10 @@ import {
 import '@xyflow/react/dist/style.css';
 import { writeTextFile, readTextFile } from '@tauri-apps/api/fs';
 import { save, open } from '@tauri-apps/api/dialog';
+import ErrorBoundary from './ErrorBoundary';
 
-//import CustomNode from './components/CustomNode';
+import CustomNode from './components/CustomNode';
+import useStore from './store';
 import Sidebar from './components/Sidebar';
 import NodePopUp from './components/NodePopUp';
 import EdgePopUp from './components/EdgePopUp';
@@ -31,21 +32,15 @@ const getId = () => `dndnode_${id++}`;
 const FlowComponent= () => {
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
+  const { nodes, edges, setNodes, setEdges } = useStore();
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
-  // const nodeTypes = {
-  //   custom: CustomNode,
-  // };
-
-  const useStore = create((set) => ({
-    nodes: [],
-    edges: [],
-    setNodes: (nodes) => set({ nodes }),
-    setEdges: (edges) => set({ edges }),
-  }));
+  const nodeTypes = {
+    custom: CustomNode,
+  };
 
   const getImage = (type) => {
     var image;
@@ -61,7 +56,24 @@ const FlowComponent= () => {
     return image;
   }
 
-  // Handle node click event
+  const onNodesChange = (changes) => {
+
+    setNodes((prevNodes) => {
+      return changes.map((change) => {
+        if (change.type === 'add') {
+          return { id: change.id, data: change.data }; 
+        }
+        return prevNodes.find((node) => node.id === change.id) || change;
+      });
+    });
+  };
+
+  const onEdgesChange = (changes) => {
+    setEdges((prevEdges) => {
+      return [...prevEdges, ...changes];
+    });
+  };
+
   const onNodeClick = (event, node) => {
     setSelectedNode(node);
     setSelectedEdge(null);
@@ -75,19 +87,19 @@ const FlowComponent= () => {
 
   const handleNodeDoubleClick = (event, node) => {
     const nodePosition = event.target.getBoundingClientRect();
-    setSelectedNode(node); // Update the selected node
+    setSelectedNode(node);
     setPopUpPosition({
-      x: nodePosition.right + 10, // Adjust x position next to the node
-      y: nodePosition.top, // Adjust y position
+      x: nodePosition.right + 10,
+      y: nodePosition.top,
     });
   };
 
   const handleEdgeDoubleClick = (event, edge) => {
     const edgePosition = event.target.getBoundingClientRect();
-    setSelectedEdge(edge); // Update the selected node
+    setSelectedEdge(edge); 
     setPopUpPosition({
-      x: edgePosition.right + 10, // Adjust x position next to the node
-      y: edgePosition.top, // Adjust y position
+      x: edgePosition.right + 10, 
+      y: edgePosition.top,
     });
   }
 
@@ -184,14 +196,14 @@ const FlowComponent= () => {
   }
 
   const onDragOver = useCallback((event) => {
-    event.preventDefault();
     console.log("drag");
+    event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
   const handleDrop = (event) => {
-    event.preventDefault();
     console.log("drop");
+    event.preventDefault();
 
     const nodeType = event.dataTransfer.getData('application/reactflow/type');
     const name = event.dataTransfer.getData('application/reactflow/name');
@@ -209,7 +221,7 @@ const FlowComponent= () => {
 
     const newNode = {
       id: getId(),
-      type: 'default',
+      type: 'custom',
       position: position,
       data: { label: `${name}`, image: `${image}`, type: 'Host', systemTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{property: 'p1', value: 'v1'}]},
       sourcePosition: 'right',
@@ -222,7 +234,7 @@ const FlowComponent= () => {
   };
 
   const closePopup = () => {
-    setSelectedNode(null); // Clear selected node to hide popup
+    setSelectedNode(null); 
     setSelectedEdge(null);
   };
 
@@ -234,7 +246,7 @@ const FlowComponent= () => {
     console.log("saving...");
     try {
       const filePath = await save({
-        defualtPath: "graph.json",
+        defaultPath: "graph.json",
         filters: [{ name: 'JSON Files', extensions: ['json'] }]
       });
 
@@ -292,7 +304,7 @@ const FlowComponent= () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          //nodeTypes={nodeTypes}
+          nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
@@ -324,7 +336,9 @@ const FlowComponent= () => {
 export default () => (
   <ReactFlowProvider>
     <DnDProvider>
-      <FlowComponent />
+      <ErrorBoundary>
+        <FlowComponent />
+      </ErrorBoundary>
     </DnDProvider>
   </ReactFlowProvider>
 );

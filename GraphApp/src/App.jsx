@@ -13,15 +13,14 @@ import '@xyflow/react/dist/style.css';
 import { writeTextFile, readTextFile } from '@tauri-apps/api/fs';
 import { save, open } from '@tauri-apps/api/dialog';
 
-import useStore from '../store';
-import CustomNode from './CustomNode';
-import Sidebar from './Sidebar';
-import NodePopUp from './NodePopUp';
-import EdgePopUp from './EdgePopUp';
-import HamburgerMenu from './HamburgerMenu';
-import { DnDProvider, useDnD } from '../DnDContext';
+//import CustomNode from './components/CustomNode';
+import Sidebar from './components/Sidebar';
+import NodePopUp from './components/NodePopUp';
+import EdgePopUp from './components/EdgePopUp';
+import HamburgerMenu from './components/HamburgerMenu';
+import { DnDProvider, useDnD } from './DnDContext';
 
-import '../styles/index.css';
+import './styles/index.css';
 import hostPic from '/src/assets/host.png';
 import routerPic from '/src/assets/router.png';
 import firewallPic from '/src/assets/firewall.png';
@@ -31,16 +30,15 @@ const getId = () => `dndnode_${id++}`;
 
 const FlowComponent= () => {
   const reactFlowWrapper = useRef(null);
-  const { nodes, edges, setNodes, setEdges } = useStore();
   const { screenToFlowPosition } = useReactFlow();
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
-  const nodeTypes = {
-    custom: CustomNode,
-  };
+  // const nodeTypes = {
+  //   custom: CustomNode,
+  // };
 
   const useStore = create((set) => ({
     nodes: [],
@@ -211,7 +209,7 @@ const FlowComponent= () => {
 
     const newNode = {
       id: getId(),
-      type: nodeType,
+      type: 'default',
       position: position,
       data: { label: `${name}`, image: `${image}`, type: 'Host', systemTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{property: 'p1', value: 'v1'}]},
       sourcePosition: 'right',
@@ -294,7 +292,7 @@ const FlowComponent= () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          nodeTypes={nodeTypes}
+          //nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}

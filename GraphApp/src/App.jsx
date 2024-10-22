@@ -195,7 +195,7 @@ const FlowComponent= () => {
     );
   }
 
-  const onDragOver = useCallback((event) => {
+  const handleDragOver = useCallback((event) => {
     console.log("drag");
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -221,7 +221,7 @@ const FlowComponent= () => {
 
     const newNode = {
       id: getId(),
-      type: 'custom',
+      type: nodeType,
       position: position,
       data: { label: `${name}`, image: `${image}`, type: 'Host', systemTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{property: 'p1', value: 'v1'}]},
       sourcePosition: 'right',
@@ -298,8 +298,8 @@ const FlowComponent= () => {
       {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} saveGraph={saveGraph} loadGraph={loadGraph} />}
       <div className={`reactflow-wrapper`} 
         ref={reactFlowWrapper} 
-        onDrop={handleDrop} 
-        onDragOver={onDragOver}
+        onDrop={(event) => handleDrop(event)}
+        onDragOver={(event) => handleDragOver(event)}
       >
         <ReactFlow
           nodes={nodes}

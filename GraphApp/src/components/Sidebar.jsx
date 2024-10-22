@@ -27,10 +27,7 @@ export default ({openMenu}) => {
       <h3 style={{marginTop: '60px', marginBottom: '15px'}}>You can drag these nodes to the pane on the right.</h3>
       <div className="custom-node" 
       onDragStart={(event) => onDragStart(event,'custom','Node')} 
-      draggable="true"
-      style={{
-        borderRadius: '50%'
-      }}>
+      draggable="true">
         Node
       </div>
     </aside>

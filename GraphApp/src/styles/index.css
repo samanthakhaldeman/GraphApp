@@ -81,8 +81,14 @@
 
 
 .reactflow-wrapper {
+    display: flex;
     pointer-events: all; 
     background-color: #222;
+    z-index: 10;
+}
+
+.reactflow-wrapper.drag-over {
+    background-color: rgba(255, 0, 0, 0.2); /* Change color to indicate a drop zone */
 }
 
 .pop-up {

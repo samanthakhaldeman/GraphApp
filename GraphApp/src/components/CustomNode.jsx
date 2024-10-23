@@ -4,7 +4,6 @@ import { Handle, Position } from 'reactflow';
 import '../styles/index.css';
 
 const CustomNode = ({id, data}) => {
-  console.log(id);
   if (!id) {
     console.warn('Custom Node rendered without a valid id.');
     return null;

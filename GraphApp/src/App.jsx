@@ -32,7 +32,7 @@ const getId = () => `dndnode_${id++}`;
 const FlowComponent= () => {
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
-  const { nodes, edges, setNodes, setEdges } = useStore();
+  const { nodes, edges, setNodes, setEdges, addNode, addEdge } = useStore();
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -57,21 +57,11 @@ const FlowComponent= () => {
   }
 
   const onNodesChange = (changes) => {
-
-    setNodes((prevNodes) => {
-      return changes.map((change) => {
-        if (change.type === 'add') {
-          return { id: change.id, data: change.data }; 
-        }
-        return prevNodes.find((node) => node.id === change.id) || change;
-      });
-    });
+    setNodes(nodes);
   };
 
   const onEdgesChange = (changes) => {
-    setEdges((prevEdges) => {
-      return [...prevEdges, ...changes];
-    });
+    setEdges(edges);
   };
 
   const onNodeClick = (event, node) => {
@@ -103,10 +93,10 @@ const FlowComponent= () => {
     });
   }
 
-  const onConnect = (params) =>
-    setEdges((eds) =>
-      addEdge({ ...params, data: { label: '', onLabelChange: handleEdgeLabelChange, connectivityTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{ property: 'p1', value: 'v1' }] } }, eds)
-  );
+  const onConnect = (params) => {
+    const newEdge = { ...params, data: { label: '', onLabelChange: handleEdgeLabelChange, connectivityTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{ property: 'p1', value: 'v1' }] } }
+    addEdge(newEdge);
+  }
 
   const handleNodeLabelChange = (newName) => {
     setNodes((nds) =>
@@ -208,22 +198,29 @@ const FlowComponent= () => {
     const nodeType = event.dataTransfer.getData('application/reactflow/type');
     const name = event.dataTransfer.getData('application/reactflow/name');
     const image = getImage('Host');
+
+    console.log("here 1?");
     
     if (!nodeType) {
       console.log("invalid node type");
       return;
     }
 
+    console.log("here 2?");
+
     const position = screenToFlowPosition({
       x: event.clientX,
       y: event.clientY,
     });
 
+    console.log("here 3?");
+
     const newNode = {
       id: getId(),
       type: nodeType,
       position: position,
-      data: { label: `${name}`, image: `${image}`, type: 'Host', systemTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{property: 'p1', value: 'v1'}]},
+      data: { label: `${name}`, image: `${image}`, type: 'Host', systemTable: [{ property: '', value: '' }], vulnerabilityTable: [{property: '', value: ''}]},
+      draggable: true,
       sourcePosition: 'right',
       targetPosition: 'left',
       onclick: {onNodeClick}
@@ -233,10 +230,20 @@ const FlowComponent= () => {
 
     console.log(typeof setNodes);
 
-    setNodes((nodes) => [...nodes, newNode]);
+    console.log(nodes);
+
+    addNode(newNode);
 
     console.log('new node added');
     console.log(nodes);
+  };
+
+  const onNodeDrag = (event, node) => {
+    addNode({ ...node, position: node.position });
+  };
+
+  const onNodeDragStop = (event, node) => {
+    addNode({ ...node, position: node.position });
   };
 
   const closePopup = () => {
@@ -318,7 +325,10 @@ const FlowComponent= () => {
           onEdgeClick={onEdgeClick}
           onNodeDoubleClick={handleNodeDoubleClick}
           onEdgeDoubleClick={handleEdgeDoubleClick}
+          onNodeDrag={onNodeDrag}
+          onNodeDragStop={onNodeDragStop}
           onConnect={onConnect}
+          draggable={true}
           fitView
         >
           <Background 

@@ -7,8 +7,12 @@ const useStore = create((set) => ({
     setNodes: (newNodes) => set({ nodes: newNodes }),
     setEdges: (newEdges) => set({ edges: newEdges }),
     
-    addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),
-    addEdge: (edge) => set((state) => ({ edges: [...state.edges, edge] }))
+    addNode: (newNode) => set((state) => ({
+        nodes: [...state.nodes, newNode],
+      })),
+      addEdge: (newEdge) => set((state) => ({
+        edges: [...state.edges, newEdge],
+      })),
   }));
 
 export default useStore

@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback, useState, useMemo } from 'react';
 import ReactFlow from 'reactflow';
 import {
   ReactFlowProvider,
@@ -38,9 +38,9 @@ const FlowComponent= () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
-  // const nodeTypes = {
-  //   custom: CustomNode,
-  // };
+  const nodeTypes = useMemo(() => ({
+    custom: CustomNode,
+}), []);
 
   const getImage = (type) => {
     var image;
@@ -233,9 +233,10 @@ const FlowComponent= () => {
 
     console.log(typeof setNodes);
 
-    setNodes((nds) => nds.concat(newNode));
+    setNodes((nodes) => [...nodes, newNode]);
 
     console.log('new node added');
+    console.log(nodes);
   };
 
   const closePopup = () => {
@@ -310,7 +311,7 @@ const FlowComponent= () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          //nodeTypes={nodeTypes}
+          nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}

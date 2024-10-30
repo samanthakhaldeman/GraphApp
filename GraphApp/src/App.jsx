@@ -2,7 +2,6 @@ import React, { useRef, useCallback, useState, useMemo } from 'react';
 import ReactFlow from 'reactflow';
 import {
   ReactFlowProvider,
-  addEdge,
   Controls,
   useReactFlow,
   Background,
@@ -92,134 +91,139 @@ const FlowComponent= () => {
       y: edgePosition.top,
     });
   }
-
-  const onConnect = (params) => {
-    const newEdge = { ...params, data: { label: '', onLabelChange: handleEdgeLabelChange, connectivityTable: [{ property: 'p1', value: 'v1' }], vulnerabilityTable: [{ property: 'p1', value: 'v1' }] } }
-    addEdge(newEdge);
-  }
-
+  
   const handleNodeLabelChange = (newName) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === selectedNode.id) {
-          return {
-            ...node,
-            data: { ...node.data, label: newName},
-          };
-        }
-        return node;
-      })
-    );
+    const updatedNodes = [];
+    
+    nodes.forEach((node) => {
+      if (node.id === selectedNode.id) {
+        updatedNodes.push({
+          ...node,
+          data: { ...node.data, label: newName },
+        });
+      } else {
+        updatedNodes.push(node);
+      }
+    });
+    
+    setNodes(updatedNodes);
   };
-
+  
   const handleEdgeLabelChange = (newName) => {
-    setEdges((edgs) =>
-      edgs.map((edge) => {
-        if (edge.id === selectedEdge.id) {
-          return {
-            ...edge,
-            data: { ...edge.data, label: newName},
-          };
-        }
-        return edge;
-      })
-    );
+    const updatedEdges = [];
+    
+    edges.forEach((edge) => {
+      if (edge.id === selectedEdge.id) {
+        updatedEdges.push({
+          ...edge,
+          data: { ...edge.data, label: newName },
+        });
+      } else {
+        updatedEdges.push(edge);
+      }
+    });
+    
+    setEdges(updatedEdges);
   };
-
+  
   const handleTypeChange = (newType) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === selectedNode.id) {
-          var newImage = getImage(newType);
-          return {
-            ...node,
-            data: {...node.data, type: newType, image: newImage},
-          };
-        }
-        return node;
-      })
-    );
+    const updatedNodes = [];
+    
+    nodes.forEach((node) => {
+      if (node.id == selectedNode.id) {
+        updatedNodes.push({
+          ...node, data: {...node.data, type: newType },
+        });
+      } else {
+        updatedNodes.push(node);
+      }
+    });
+    setNodes(updatedNodes);
   };
-
+  
   const handleNodeTableChange = ( tableType, newTable) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === selectedNode.id) {
-          if (tableType == "system") {
-            return {
-              ...node,
-              data: {...node.data, systemTable: newTable},
-            };
-          }
-          else {
-            return {
-              ...node,
-              data: {...node.data, vulnerabilityTable: newTable},
-            };
-          }
+    const updatedNodes = [];
+    
+    nodes.forEach((node) => {
+      if (node.id == selectedNode.id) {
+        if (tableType == "system") {
+          updatedNodes.push({
+            ...node, data: {...node.data, systemTable: newTable},
+          });
+        } else {
+          updatedNodes.push({
+            ...node, data: {...node.data, vulnerabilityTable: newTable},
+          });
         }
-        return node;
-      })
-    );
+      } else {
+        updatedNodes.push(node);
+      }
+    })
+    setNodes(updatedNodes);
   };
-
+  
   const handleEdgeTableChange = ( tableType, newTable) => {
-    setEdges((edgs) =>
-      edgs.map((edge) => {
-        if (edge.id === selectedEdge.id) {
-          if (tableType == "connectivity") {
-            return {
-              ...edge,
-              data: {...edge.data, connectivityTable: newTable},
-            };
-          }
-          else {
-            return {
-              ...edge,
-              data: {...edge.data, vulnerabilityTable: newTable},
-            };
-          }
+    const updatedEdges = [];
+    
+    edges.forEach((edge) => {
+      if (edge.id == selectedEdge.id) {
+        if (tableType == "connectivity") {
+          updatedEdges.push({
+            ...edge, data: {...edge.data, connectivityTable: newTable},
+          });
+        } else {
+          updatedEdges.push({
+            ...edge, data: {...edge.data, vulnerabilityTable: newTable},
+          });
         }
-        return edge;
-      })
-    );
+      } else {
+        updatedEdges.push(edge);
+      }
+    })
+    setEdges(updatedEdges);
   }
-
+  
   const handleDragOver = useCallback((event) => {
     console.log("drag");
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
-
+  
   const handleDrop = (event) => {
     console.log("drop");
     event.preventDefault();
-
+    
     const nodeType = event.dataTransfer.getData('application/reactflow/type');
     const name = event.dataTransfer.getData('application/reactflow/name');
     const image = getImage('Host');
-
+    
     console.log("here 1?");
     
     if (!nodeType) {
       console.log("invalid node type");
       return;
     }
-
+    
     console.log("here 2?");
-
+    
     const position = screenToFlowPosition({
       x: event.clientX,
       y: event.clientY,
     });
-
+    
     console.log("here 3?");
-
+    
     const newNode = {
       id: getId(),
       type: nodeType,
       position: position,
-      data: { label: `${name}`, image: `${image}`, type: 'Host', systemTable: [{ property: '', value: '' }], vulnerabilityTable: [{property: '', value: ''}]},
+      data: { 
+        label: `${name}`, 
+        image: `${image}`, 
+        type: 'Host', 
+        systemTable: [{ type: 's1', value: 'sv1' }], 
+        vulnerabilityTable: [{type: 'v1', value: 'vv1'}]
+      },
       draggable: true,
       sourcePosition: 'right',
       targetPosition: 'left',
@@ -227,17 +231,31 @@ const FlowComponent= () => {
       
     };
     console.log("new node created");
-
+    
     console.log(typeof setNodes);
-
+    
     console.log(nodes);
-
+    
     addNode(newNode);
-
+    
     console.log('new node added');
     console.log(nodes);
   };
-
+  
+  const onConnect = (params) => {
+    const newEdge = { 
+      ...params, 
+      id: `edge-${getId()}`, 
+      data: { 
+        label: '', 
+        onLabelChange: handleEdgeLabelChange, 
+        connectivityTable: [{ type: '', value: '' }], 
+        vulnerabilityTable: [{ type: '', value: '' }] 
+      } 
+    }
+    addEdge(newEdge);
+  }
+  
   const onNodeDrag = (event, node) => {
     addNode({ ...node, position: node.position });
   };

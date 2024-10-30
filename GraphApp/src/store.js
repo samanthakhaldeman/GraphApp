@@ -4,7 +4,7 @@ const useStore = create((set) => ({
     nodes: [],
     edges: [],
     
-    setNodes: (newNodes) => set({ nodes: newNodes }),
+    setNodes: (newNodes) => set((state) => ({ nodes: newNodes })),
     setEdges: (newEdges) => set({ edges: newEdges }),
     
     addNode: (newNode) => set((state) => ({

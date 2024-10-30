@@ -21,8 +21,8 @@ const HamburgerMenu = ({closeMenu, saveGraph, loadGraph}) => {
             X
         </button>
         <button>New</button>
-        {/* <button onClick={saveGraph}>Save</button>
-        <button onClick={loadGraph}>Load</button> */}
+        <button onClick={saveGraph}>Save</button>
+        <button onClick={loadGraph}>Load</button>
     </div>
   );
 };

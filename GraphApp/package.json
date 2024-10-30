@@ -12,11 +12,13 @@
   "dependencies": {
     "@mantine/core": "7.13.4",
     "@mantine/hooks": "7.13.4",
-    "@tauri-apps/api": "2.0.3",
-    "@types/node": "22.7.9",
+    "@tauri-apps/api": "^2.0.3",
+    "@tauri-apps/plugin-dialog": "^2.0.1",
+    "@tauri-apps/plugin-fs": "^2.0.1",
+    "@types/node": "22.8.4",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
-    "@xyflow/react": "^12.3.2",
+    "@xyflow/react": "12.3.3",
     "autoprefixer": "10.4.20",
     "classcat": "^5.0.5",
     "cssnano": "^7.0.6",
@@ -24,14 +26,14 @@
     "postcss-cli": "^11.0.0",
     "postcss-combine-duplicated-selectors": "^10.0.3",
     "postcss-import": "^16.1.0",
-    "postcss-nested": "^6.2.0",
+    "postcss-nested": "7.0.0",
     "postcss-rename": "^0.6.1",
     "react": "^18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "6.27.0",
     "react-scripts": "^5.0.1",
     "reactflow": "^11.11.4",
-    "zustand": "^5.0.0"
+    "zustand": "5.0.1"
   },
   "main": "/main.jsx",
   "devDependencies": {

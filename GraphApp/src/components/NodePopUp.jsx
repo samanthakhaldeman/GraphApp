@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import Table from "./Table";
 import '../styles/index.css';
@@ -21,6 +21,13 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 			document.removeEventListener('click', handleClickOutside);
 		};
 	}, [closePopup]);
+
+	const handleDrag = useCallback((event) => {
+		if (node) {
+		  position.left = node.position.x + 15;
+		  position.top = node.position.y;
+		}
+	}, []);
 
     const handleInputEnter = (e) => {
         if (e.key === 'Enter') {
@@ -63,11 +70,14 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 		<div ref={popupRef} className='pop-up'
 		style={{
 			position: 'absolute',
-			top: `${y}px`,
-			left: `${x}px`,
-			zIndex: 1000,
+			top: `${position.y}px`,
+			left: `${position.x}px`,
+			zIndex: 100,
 			width: '300px',  
 		}}
+		onDrag={handleDrag}
+		onDragStart={handleDrag}
+		onDragEnd={handleDrag}
 		>
 			<div className="row">
 				<div className="row">
@@ -97,14 +107,10 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 				<h3>Type:</h3>
 				<select value={selectedType} onChange={handleTypeChange} style={{ marginLeft: '5px', padding: '5px' }}>
 					<option value="Host">Host</option>
-					<option value="Router">Router</option>
+					<option value="Server">Server</option>
 					<option value="Firewall">Firewall</option>
 				</select>
 			</div>
-			<label>
-				id: {node.id}
-			</label>
-			{node.data.image && <img src={node.data.image} className="node-image" />}
 			<h3>Node Properties</h3>
 			<div>
 				<button className="tab" onClick={() => setActiveTab('system')} style={{ marginRight: '5px' }}>

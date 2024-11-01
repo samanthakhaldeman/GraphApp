@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState, useMemo } from 'react';
-import ReactFlow from 'reactflow';
+import ReactFlow, { MarkerType } from 'reactflow';
 import {
   ReactFlowProvider,
   Controls,
@@ -22,7 +22,7 @@ import { DnDProvider, useDnD } from './DnDContext';
 
 import './styles/index.css';
 import hostPic from '/src/assets/host.png';
-import routerPic from '/src/assets/router.png';
+import serverPic from '/src/assets/server.png';
 import firewallPic from '/src/assets/firewall.png';
 
 let id = 0;
@@ -39,15 +39,15 @@ const FlowComponent= () => {
 
   const nodeTypes = useMemo(() => ({
     custom: CustomNode,
-}), []);
+  }), []);
 
   const getImage = (type) => {
     var image;
     if (type == 'Host') {
       image = hostPic;
     }
-    else if (type == 'Router') {
-      image = routerPic;
+    else if (type == 'Server') {
+      image = serverPic;
     }
     else {
       image = firewallPic;
@@ -78,7 +78,7 @@ const FlowComponent= () => {
     const nodePosition = event.target.getBoundingClientRect();
     setSelectedNode(node);
     setPopUpPosition({
-      x: nodePosition.right + 10,
+      x: nodePosition.right + 15,
       y: nodePosition.top,
     });
   };
@@ -238,13 +238,20 @@ const FlowComponent= () => {
         onLabelChange: handleEdgeLabelChange, 
         connectivityTable: [{ type: '', value: '' }], 
         vulnerabilityTable: [{ type: '', value: '' }] 
-      } 
+      }, 
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+      },
     }
     addEdge(newEdge);
   }
   
   const onNodeDrag = (event, node) => {
     addNode({ ...node, position: node.position });
+    setPopUpPosition({
+      x: node.position.right + 15,
+      y: node.position.top
+    })
   };
 
   const onNodeDragStop = (event, node) => {
@@ -271,7 +278,7 @@ const FlowComponent= () => {
       if (filePath) {
         const graphData = {
           nodes: nodes.map(node => ({ id: node.id, data: node.data, position: node.position, type: node.type })),
-          edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, data: edge.data })),
+          edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, markerEnd: edge.markerEnd, type: edge.type, data: edge.data })),
         };
         
         const json = JSON.stringify(graphData, null, 2);
@@ -341,7 +348,7 @@ const FlowComponent= () => {
             gap={30} 
             size={2} 
           />
-          <Controls/>
+
         </ReactFlow>
       </div>
       <div>

@@ -4,7 +4,7 @@ import '../styles/index.css';
 const HamburgerMenu = ({closeMenu, saveGraph, loadGraph}) => {
 
   return (
-    <div className="hamburger-menu">
+    <aside className="hamburger-menu">
         <button className="regular" 
         style={{
             marginRight: '-7px',
@@ -23,7 +23,7 @@ const HamburgerMenu = ({closeMenu, saveGraph, loadGraph}) => {
         <button>New</button>
         <button onClick={saveGraph}>Save</button>
         <button onClick={loadGraph}>Load</button>
-    </div>
+    </aside>
   );
 };
 

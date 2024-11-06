@@ -18,7 +18,7 @@ import Sidebar from './components/Sidebar';
 import NodePopUp from './components/NodePopUp';
 import EdgePopUp from './components/EdgePopUp';
 import HamburgerMenu from './components/HamburgerMenu';
-import { DnDProvider, useDnD } from './DnDContext';
+import { DnDProvider } from './DnDContext';
 
 import './styles/index.css';
 import hostPic from '/src/assets/host.png';
@@ -29,6 +29,7 @@ let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 const FlowComponent= () => {
+  const { fitView } = useReactFlow();
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
   const { nodes, edges, setNodes, setEdges, addNode, addEdge } = useStore();
@@ -69,7 +70,6 @@ const FlowComponent= () => {
   };
 
   const onEdgeClick = (event, edge) => {
-    console.log("edge selected");
     setSelectedEdge(edge);
     setSelectedNode(null);
   }
@@ -316,6 +316,13 @@ const FlowComponent= () => {
     }
   }
 
+  const handleFitView = useCallback(() => {
+    fitView({ padding: 0.2, maxZoom: 1 });
+  }, [fitView]);
+
+  const onMove = () => {
+    fitView();
+  };
 
   return (
     <div className="dndflow">
@@ -327,6 +334,11 @@ const FlowComponent= () => {
         onDragOver={(event) => handleDragOver(event)}
       >
         <ReactFlow
+          defaultViewport={{ x: 0, y: 0, zoom: 0.25 }} 
+          onInit={handleFitView}
+          fitViewOptions={{ padding: 0.2, maxZoom: 2, minZoom: 0.01 }}
+          onlyRenderVisibleElements={false}
+          onMove={onMove}
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
@@ -340,6 +352,8 @@ const FlowComponent= () => {
           onNodeDragStop={onNodeDragStop}
           onConnect={onConnect}
           draggable={true}
+          panOnDrag
+          zoomOnScroll
           fitView
         >
           <Background 
@@ -348,7 +362,7 @@ const FlowComponent= () => {
             gap={30} 
             size={2} 
           />
-
+          <Controls />
         </ReactFlow>
       </div>
       <div>

@@ -28,6 +28,16 @@
     color: #333;
 }
 
+.react-flow__renderer, .react-flow__viewport, svg {
+    overflow: visible !important;
+}
+
+.react-flow__renderer {
+    width: 200vw;
+    height: 200vh;
+}
+  
+
 .dndflow aside .description {
     margin-bottom: 10px;
 }

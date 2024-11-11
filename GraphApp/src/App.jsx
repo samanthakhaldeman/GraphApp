@@ -9,7 +9,6 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { debounce } from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
 
 import ErrorBoundary from './ErrorBoundary';
 import CustomNode from './components/CustomNode';
@@ -214,12 +213,17 @@ const FlowComponent= () => {
       y: event.clientY,
     });
     
-    controlledAddNode(nodeType, position, name, image);
+    const newNodeId = getId();
+    const foundNode = nodes.find(node => node.id === newNodeId);
+    if (!foundNode) {
+      console.log("calling controlledAddNode");
+      controlledAddNode(newNodeId, nodeType, position, name, image);
+    } 
   };
 
-  const controlledAddNode = debounce((nodeType, position, name, image) => {
+  const controlledAddNode = debounce((newNodeId, nodeType, position, name, image) => {
     const newNode = {
-      id: uuidv4(),
+      id: newNodeId,
       type: nodeType,
       position: position,
       data: { 
@@ -234,9 +238,9 @@ const FlowComponent= () => {
       targetPosition: 'left',
       onclick: {onNodeClick}
     };
-    
+    console.log("nodes before add: ", nodes.length);
     addNode(newNode);
-    console.log("node added");
+    console.log("nodes after add: ", nodes.length);
   }, 100);
   
   const onConnect = (params) => {

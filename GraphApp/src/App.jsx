@@ -8,6 +8,8 @@ import {
   BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { debounce } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 import ErrorBoundary from './ErrorBoundary';
 import CustomNode from './components/CustomNode';
@@ -201,18 +203,23 @@ const FlowComponent= () => {
     const name = event.dataTransfer.getData('application/reactflow/name');
     const image = getImage('Host');
     
+    console.log("node type post transfer: ", nodeType);
     if (!nodeType) {
       console.log("invalid node type");
       return;
     }
-    
+
     const position = screenToFlowPosition({
       x: event.clientX,
       y: event.clientY,
     });
     
+    controlledAddNode(nodeType, position, name, image);
+  };
+
+  const controlledAddNode = debounce((nodeType, position, name, image) => {
     const newNode = {
-      id: getId(),
+      id: uuidv4(),
       type: nodeType,
       position: position,
       data: { 
@@ -226,11 +233,11 @@ const FlowComponent= () => {
       sourcePosition: 'right',
       targetPosition: 'left',
       onclick: {onNodeClick}
-      
     };
     
-    addNode(newNode); 
-  };
+    addNode(newNode);
+    console.log("node added");
+  }, 100);
   
   const onConnect = (params) => {
     const newEdge = { 

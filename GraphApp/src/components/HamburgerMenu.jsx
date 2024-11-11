@@ -3,7 +3,7 @@ import '../styles/index.css';
 
 import { saveGraph, loadGraph } from '../methodLogic/LoadSave';
 
-const HamburgerMenu = ({closeMenu, setNodes, setEdges}, nodes, edges) => {
+const HamburgerMenu = ({closeMenu, nodes, edges, setNodes, setEdges}) => {
 
   const save = () => {
     saveGraph(nodes, edges);

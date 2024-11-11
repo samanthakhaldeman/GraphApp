@@ -12,6 +12,7 @@ export default ({openMenu}) => {
     setType(nodeType);
     setName(nodeName);
 
+    console.log("node type: ", nodeType); 
     event.dataTransfer.setData('application/reactflow/type', nodeType)
     event.dataTransfer.setData('application/reactflow/name', nodeName)
     event.dataTransfer.effectAllowed = 'move';
@@ -26,7 +27,7 @@ export default ({openMenu}) => {
       </button>
       <h3 style={{marginTop: '60px', marginBottom: '15px'}}>You can drag these nodes to the pane on the right.</h3>
       <div className="custom-node" 
-      onDragStart={(event) => onDragStart(event,'custom','Node')} 
+      onDragStart={(event) => onDragStart(event, 'custom', 'Node')} 
       draggable="true">
         Node
       </div>

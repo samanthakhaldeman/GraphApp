@@ -2,6 +2,8 @@ import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs';
 import { save, open } from '@tauri-apps/plugin-dialog';
 
 export const saveGraph = async (nodes, edges) => {
+    console.log("nodes length: ", nodes.length);
+    console.log("edges length: ", edges.length);
     console.log("saving...");
     try {
         const filePath = await save({

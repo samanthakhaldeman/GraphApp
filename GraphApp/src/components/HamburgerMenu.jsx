@@ -1,7 +1,17 @@
 import React from 'react';
 import '../styles/index.css';
 
-const HamburgerMenu = ({closeMenu, saveGraph, loadGraph}) => {
+import { saveGraph, loadGraph } from '../methodLogic/LoadSave';
+
+const HamburgerMenu = ({closeMenu, setNodes, setEdges}, nodes, edges) => {
+
+  const save = () => {
+    saveGraph(nodes, edges);
+  }
+
+  const load = () => {
+    loadGraph(setNodes, setEdges);
+  }
 
   return (
     <aside className="hamburger-menu">
@@ -21,8 +31,8 @@ const HamburgerMenu = ({closeMenu, saveGraph, loadGraph}) => {
             X
         </button>
         <button>New</button>
-        <button onClick={saveGraph}>Save</button>
-        <button onClick={loadGraph}>Load</button>
+        <button onClick={save}>Save</button>
+        <button onClick={load}>Load</button>
     </aside>
   );
 };

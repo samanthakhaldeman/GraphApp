@@ -18,7 +18,6 @@ import EdgePopUp from './components/EdgePopUp';
 import HamburgerMenu from './components/HamburgerMenu';
 
 import { DnDProvider } from './DnDContext';
-import { loadGraph, saveGraph } from './methodLogic/LoadSave';
 
 import './styles/index.css';
 import hostPic from '/src/assets/host.png';
@@ -282,7 +281,7 @@ const FlowComponent= () => {
   return (
     <div className="dndflow">
       {!menuIsOpen && <Sidebar openMenu={toggleMenu}/>}
-      {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} saveGraph={saveGraph} loadGraph={loadGraph} />}
+      {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} nodes={nodes} edges={edges} setNodes={setNodes} setEdges={setEdges} />}
       <div className={`reactflow-wrapper`} 
         ref={reactFlowWrapper} 
         onDrop={(event) => handleDrop(event)}

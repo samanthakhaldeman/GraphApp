@@ -106,9 +106,10 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 			<div className='row' style={{ marginTop: '5px' }}>
 				<h3>Type:</h3>
 				<select value={selectedType} onChange={handleTypeChange} style={{ marginLeft: '5px', padding: '5px' }}>
-					<option value="Host">Host</option>
-					<option value="Server">Server</option>
 					<option value="Firewall">Firewall</option>
+					<option value="Host">Host</option>
+					<option value="Router">Router</option>
+					<option value="Server">Server</option>
 				</select>
 			</div>
 			<h3>Node Properties</h3>

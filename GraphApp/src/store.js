@@ -24,6 +24,13 @@ const useStore = create((set) => ({
     addEdge: (newEdge) => set((state) => ({
       edges: [...state.edges, newEdge],
     })),
+
+    removeNode: (nodeId) => set((state) => ({
+      nodes: state.nodes.filter((node) => node.id !== nodeId),
+    })),
+    removeEdge: (edgeId) => set((state) => ({
+      edges: state.edges.filter((edge) => edge.id !== edgeId),
+    })),
   }));
 
 export default useStore

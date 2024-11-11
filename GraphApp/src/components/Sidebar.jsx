@@ -12,7 +12,6 @@ export default ({openMenu}) => {
     setType(nodeType);
     setName(nodeName);
 
-    console.log("node type: ", nodeType); 
     event.dataTransfer.setData('application/reactflow/type', nodeType)
     event.dataTransfer.setData('application/reactflow/name', nodeName)
     event.dataTransfer.effectAllowed = 'move';

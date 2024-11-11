@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState, useMemo } from 'react';
+import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
 import ReactFlow, { MarkerType } from 'reactflow';
 import {
   ReactFlowProvider,
@@ -33,9 +33,9 @@ const FlowComponent= () => {
   const { fitView } = useReactFlow();
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
-  const { nodes, edges, setNodes, setEdges, addNode, addEdge } = useStore();
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [selectedEdge, setSelectedEdge] = useState(null);
+  const { nodes, edges, setNodes, setEdges, addNode, addEdge, removeNode, removeEdge } = useStore();
+  const selectedNode = useRef(null);
+  const selectedEdge = useRef(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
@@ -60,6 +60,23 @@ const FlowComponent= () => {
     return image;
   }
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Backspace' && selectedNode.current) {
+        removeNode(selectedNode.current.id);
+      }
+      else if (event.key === 'Backspace' && selectedEdge.current) {
+        removeEdge(selectedEdge.current.id);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedNode.current, setNodes], [selectedEdge.current, setEdges]);
+
   const onNodesChange = (changes) => {
     setNodes(nodes);
   };
@@ -69,18 +86,18 @@ const FlowComponent= () => {
   };
 
   const onNodeClick = (event, node) => {
-    setSelectedNode(node);
-    setSelectedEdge(null);
+    selectedNode.current = node;
+    selectedEdge.current = null;
   };
 
   const onEdgeClick = (event, edge) => {
-    setSelectedEdge(edge);
-    setSelectedNode(null);
+    selectedNode.current = null;
+    selectedEdge.current = edge;
   }
 
   const handleNodeDoubleClick = (event, node) => {
     const nodePosition = event.target.getBoundingClientRect();
-    setSelectedNode(node);
+    selectedNode.current = node;
     setPopUpPosition({
       x: nodePosition.right + 15,
       y: nodePosition.top,
@@ -89,7 +106,7 @@ const FlowComponent= () => {
 
   const handleEdgeDoubleClick = (event, edge) => {
     const edgePosition = event.target.getBoundingClientRect();
-    setSelectedEdge(edge); 
+    selectedEdge.current = edge;
     setPopUpPosition({
       x: edgePosition.right + 10, 
       y: edgePosition.top,
@@ -100,7 +117,7 @@ const FlowComponent= () => {
     const updatedNodes = [];
     
     nodes.forEach((node) => {
-      if (node.id === selectedNode.id) {
+      if (node.id === selectedNode.current.id) {
         updatedNodes.push({
           ...node,
           data: { ...node.data, label: newName },
@@ -117,7 +134,7 @@ const FlowComponent= () => {
     const updatedEdges = [];
     
     edges.forEach((edge) => {
-      if (edge.id === selectedEdge.id) {
+      if (edge.id === selectedEdge.current.id) {
         updatedEdges.push({
           ...edge,
           data: { ...edge.data, label: newName },
@@ -134,7 +151,7 @@ const FlowComponent= () => {
     const updatedNodes = [];
     
     nodes.forEach((node) => {
-      if (node.id == selectedNode.id) {
+      if (node.id == selectedNode.current.id) {
         const newImage = getImage(newType);
         updatedNodes.push({
           ...node, data: {...node.data, type: newType, image: newImage },
@@ -150,7 +167,7 @@ const FlowComponent= () => {
     const updatedNodes = [];
     
     nodes.forEach((node) => {
-      if (node.id == selectedNode.id) {
+      if (node.id == selectedNode.current.id) {
         if (tableType == "system") {
           updatedNodes.push({
             ...node, data: {...node.data, systemTable: newTable},
@@ -171,7 +188,7 @@ const FlowComponent= () => {
     const updatedEdges = [];
     
     edges.forEach((edge) => {
-      if (edge.id == selectedEdge.id) {
+      if (edge.id == selectedEdge.current.id) {
         if (tableType == "connectivity") {
           updatedEdges.push({
             ...edge, data: {...edge.data, connectivityTable: newTable},
@@ -273,8 +290,8 @@ const FlowComponent= () => {
   };
 
   const closePopup = () => {
-    setSelectedNode(null); 
-    setSelectedEdge(null);
+    selectedNode.current = null;
+    selectedEdge.current = null;
   };
 
   const toggleMenu = () => {
@@ -331,10 +348,10 @@ const FlowComponent= () => {
         </ReactFlow>
       </div>
       <div>
-        {selectedNode && <NodePopUp node={selectedNode} position={popUpPosition} onLabelChange={handleNodeLabelChange} onTypeChange={handleTypeChange} onTableChange={handleNodeTableChange} closePopup={closePopup} />}
+        {selectedNode.current && <NodePopUp node={selectedNode.current} position={popUpPosition} onLabelChange={handleNodeLabelChange} onTypeChange={handleTypeChange} onTableChange={handleNodeTableChange} closePopup={closePopup} />}
       </div>
       <div>
-        {selectedEdge && <EdgePopUp edge={selectedEdge} position={popUpPosition} onLabelChange={handleEdgeLabelChange} onTableChange={handleEdgeTableChange} closePopup={closePopup} />}
+        {selectedEdge.current && <EdgePopUp edge={selectedEdge.current} position={popUpPosition} onLabelChange={handleEdgeLabelChange} onTableChange={handleEdgeTableChange} closePopup={closePopup} />}
       </div>
     </div>
   );

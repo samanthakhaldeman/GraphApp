@@ -208,22 +208,18 @@ const FlowComponent= () => {
   }
   
   const handleDragOver = useCallback((event) => {
-    console.log("drag");
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
   
   const handleDrop = (event) => {
-    console.log("drop");
     event.preventDefault();
     
     const nodeType = event.dataTransfer.getData('application/reactflow/type');
     const name = event.dataTransfer.getData('application/reactflow/name');
     const image = getImage('Host');
     
-    console.log("node type post transfer: ", nodeType);
     if (!nodeType) {
-      console.log("invalid node type");
       return;
     }
 
@@ -235,7 +231,6 @@ const FlowComponent= () => {
     const newNodeId = getId();
     const foundNode = nodes.find(node => node.id === newNodeId);
     if (!foundNode) {
-      console.log("calling controlledAddNode");
       controlledAddNode(newNodeId, nodeType, position, name, image);
     } 
   };
@@ -257,9 +252,7 @@ const FlowComponent= () => {
       targetPosition: 'left',
       onclick: {onNodeClick}
     };
-    console.log("nodes before add: ", nodes.length);
     addNode(newNode);
-    console.log("nodes after add: ", nodes.length);
   }, 100);
   
   const onConnect = (params) => {

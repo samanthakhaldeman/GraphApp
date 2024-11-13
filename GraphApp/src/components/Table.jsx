@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const Table = ({ table, onTableChange, tableType }) => {
-	console.log(typeof table);
 	const [SRows, setSRows] = useState([{ type: '', value: '' }]);
 	const [VRows, setVRows] = useState([{ type: '', value: '' }]);
 	const [CRows, setCRows] = useState([{ type: '', value: '' }]) ;
@@ -28,7 +27,6 @@ const Table = ({ table, onTableChange, tableType }) => {
 	};
   
 	const handleAddRow = () => {
-	  console.log("add row");
 	  if (tableType == "system") {
 		  setSRows([...table, { type: '', value: '' }]); 
 		  onTableChange(tableType, SRows);

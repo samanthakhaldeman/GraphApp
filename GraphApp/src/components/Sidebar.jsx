@@ -8,7 +8,6 @@ export default ({openMenu}) => {
   const [name, setName] = useState();
 
   const onDragStart = (event, nodeType, nodeName) => {
-    console.log("start drag");
     setType(nodeType);
     setName(nodeName);
 

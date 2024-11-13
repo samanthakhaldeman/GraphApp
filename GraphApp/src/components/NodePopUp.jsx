@@ -42,8 +42,7 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 
 	if (!node) return null; 
 
-	const { x, y } = position; 
-	console.log(typeof node.data.systemTable);
+	const { x, y } = position;
 
 	const renderTabContent = () => {
 		switch (activeTab) {

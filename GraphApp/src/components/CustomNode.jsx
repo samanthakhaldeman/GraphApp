@@ -5,7 +5,6 @@ import '../styles/index.css';
 
 const CustomNode = ({id, data}) => {
   if (!id) {
-    console.warn('Custom Node rendered without a valid id.');
     return null;
   }
 

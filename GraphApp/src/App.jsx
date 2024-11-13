@@ -36,6 +36,8 @@ const FlowComponent= () => {
   const { nodes, edges, setNodes, setEdges, addNode, addEdge, removeNode, removeEdge } = useStore();
   const selectedNode = useRef(null);
   const selectedEdge = useRef(null);
+  const [popUpNode, setPopUpNode] = useState(null);
+  const [popUpEdge, setPopUpEdge] = useState(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
@@ -62,10 +64,10 @@ const FlowComponent= () => {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'Backspace' && selectedNode.current) {
+      if (event.key === 'Backspace' && selectedNode.current && !popUpNode) {
         removeNode(selectedNode.current.id);
       }
-      else if (event.key === 'Backspace' && selectedEdge.current) {
+      else if (event.key === 'Backspace' && selectedEdge.current && !popUpEdge) {
         removeEdge(selectedEdge.current.id);
       }
     };
@@ -97,7 +99,7 @@ const FlowComponent= () => {
 
   const handleNodeDoubleClick = (event, node) => {
     const nodePosition = event.target.getBoundingClientRect();
-    selectedNode.current = node;
+    setPopUpNode(node);
     setPopUpPosition({
       x: nodePosition.right + 15,
       y: nodePosition.top,
@@ -106,7 +108,7 @@ const FlowComponent= () => {
 
   const handleEdgeDoubleClick = (event, edge) => {
     const edgePosition = event.target.getBoundingClientRect();
-    selectedEdge.current = edge;
+    setPopUpEdge(edge);
     setPopUpPosition({
       x: edgePosition.right + 10, 
       y: edgePosition.top,
@@ -290,8 +292,8 @@ const FlowComponent= () => {
   };
 
   const closePopup = () => {
-    selectedNode.current = null;
-    selectedEdge.current = null;
+    setPopUpEdge(null);
+    setPopUpNode(null);
   };
 
   const toggleMenu = () => {
@@ -348,10 +350,10 @@ const FlowComponent= () => {
         </ReactFlow>
       </div>
       <div>
-        {selectedNode.current && <NodePopUp node={selectedNode.current} position={popUpPosition} onLabelChange={handleNodeLabelChange} onTypeChange={handleTypeChange} onTableChange={handleNodeTableChange} closePopup={closePopup} />}
+        {popUpNode && <NodePopUp node={popUpNode} position={popUpPosition} onLabelChange={handleNodeLabelChange} onTypeChange={handleTypeChange} onTableChange={handleNodeTableChange} closePopup={closePopup} />}
       </div>
       <div>
-        {selectedEdge.current && <EdgePopUp edge={selectedEdge.current} position={popUpPosition} onLabelChange={handleEdgeLabelChange} onTableChange={handleEdgeTableChange} closePopup={closePopup} />}
+        {popUpEdge && <EdgePopUp edge={popUpEdge} position={popUpPosition} onLabelChange={handleEdgeLabelChange} onTableChange={handleEdgeTableChange} closePopup={closePopup} />}
       </div>
     </div>
   );

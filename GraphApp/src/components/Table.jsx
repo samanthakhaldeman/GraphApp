@@ -1,44 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const Table = ({ table, onTableChange, tableType }) => {
-	const [SRows, setSRows] = useState([{ type: '', value: '' }]);
-	const [VRows, setVRows] = useState([{ type: '', value: '' }]);
-	const [CRows, setCRows] = useState([{ type: '', value: '' }]) ;
+	const [rows, setRows] = useState([{ type: '', value: '' }]);
   
 	useEffect(() => {
-	  setSRows( table || [{ type: '', value: '' }]);
-	  setVRows( table || [{ type: '', value: '' }]);
-	  setCRows( table || [{ type: '', value: '' }]);
+	  	setRows( table || [{ type: '', value: '' }]);
 	}, [table]);
 	
 	const handleRowChange = (index, field, value) => {
-	  const updatedRows = [...table]; 
-	  updatedRows[index][field] = value; 
-	  if (tableType == "system") {
-		  setSRows(updatedRows);
-	  }
-	  else if (tableType == "vulnerability") {
-		  setVRows(updatedRows);
-	  }
-	  else {
-		  setCRows(updatedRows);
-	  }
-	  onTableChange(tableType, updatedRows);
+		const updatedRows = [...table]; 
+		updatedRows[index][field] = value; 
+		setRows(updatedRows);
+		onTableChange(tableType, updatedRows);
 	};
   
 	const handleAddRow = () => {
-	  if (tableType == "system") {
-		  setSRows([...table, { type: '', value: '' }]); 
-		  onTableChange(tableType, SRows);
-	  }
-	  else if (tableType == "vulnerability") {
-		  setVRows([...table, { type: '', value: '' }]);
-		  onTableChange(tableType, VRows);
-	  }
-	  else {
-		  setCRows([...table, { type: '', value: '' }]);
-		  onTableChange(tableType, CRows);
-	  }
+		setRows((prevRows) => {
+			const updatedRows = [...prevRows, { type: '', value: '' }];
+			onTableChange(tableType, updatedRows);
+			return updatedRows; 
+		});
 	}; 
   
 	return (
@@ -51,7 +32,7 @@ const Table = ({ table, onTableChange, tableType }) => {
 			</tr>
 		  </thead>
 		  <tbody>
-			{table.map((row, index) => (
+			{rows.map((row, index) => (
 			  <tr key={index}>
 				<td>
 				  <input

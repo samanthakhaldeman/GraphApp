@@ -3,19 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Table from "./Table";
 import '../styles/index.css';
 
-{/* <h3>Edge Properties</h3>
-			<div>
-				<button className="tab" onClick={() => setActiveTab('connectivity')} style={{ marginRight: '5px' }}>
-				Connectivity
-				</button>
-				<button className="tab" onClick={() => setActiveTab('vulnerability')}>
-				Vulnerability
-				</button>
-			</div>
-			{renderTabContent()} */}
-
 const EdgePopUp = ({ edge, position, onLabelChange, onTableChange, closePopup }) => {
 	const [activeTab, setActiveTab] = useState('connectivity');
+	const [tableA, setTableA] = useState(edge.data.connectivityTable);
+	const [tableB, setTableB] = useState(edge.data.vulnerabilityTable);
 	const popupRef = useRef(); 
 
 	
@@ -38,6 +29,16 @@ const EdgePopUp = ({ edge, position, onLabelChange, onTableChange, closePopup })
         }
     }
 
+	const handleTableAChange = (tableType, updatedRows) => {
+		setTableA(updatedRows);
+		onTableChange(tableType, updatedRows);
+	}
+
+	const handleTableBChange = (tableType, updatedRows) => {
+		setTableB(updatedRows);
+		onTableChange(tableType, updatedRows);
+	}
+
 	if (!edge) return null; 
 
 	const { x, y } = position; 
@@ -48,14 +49,14 @@ const EdgePopUp = ({ edge, position, onLabelChange, onTableChange, closePopup })
                 return (
                     <div>
                         <h3>Connectivity Properties</h3>
-                        <Table table={edge.data.connectivityTable} onTableChange={onTableChange} tableType={activeTab} />
+                        <Table table={tableA} onTableChange={handleTableAChange} tableType={activeTab} />
                     </div>
                 );
             case 'vulnerability':
                 return (
                     <div>
                         <h3>Vulnerability Properties</h3>
-                        <Table table={edge.data.vulnerabilityTable} onTableChange={onTableChange} tableType={activeTab} />
+                        <Table table={tableB} onTableChange={handleTableBChange} tableType={activeTab} />
                     </div>
                     );
             default:

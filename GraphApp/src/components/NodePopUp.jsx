@@ -6,8 +6,9 @@ import '../styles/index.css';
 const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange, closePopup }) => {
     const [selectedType, setSelectedType] = useState(node?.data.type || 'Host');
 	const [activeTab, setActiveTab] = useState('system');
+	const [tableA, setTableA] = useState(node.data.systemTable);
+	const [tableB, setTableB] = useState(node.data.vulnerabilityTable);
 	const popupRef = useRef(); 
-
 	
 	useEffect(() => {
 		const handleClickOutside = (event) => {
@@ -21,6 +22,16 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 			document.removeEventListener('click', handleClickOutside);
 		};
 	}, [closePopup]);
+
+	const handleTableAChange = (tableType, updatedRows) => {
+		setTableA(updatedRows);
+		onTableChange(tableType, updatedRows);
+	}
+
+	const handleTableBChange = (tableType, updatedRows) => {
+		setTableB(updatedRows);
+		onTableChange(tableType, updatedRows);
+	}
 
 	const handleDrag = useCallback((event) => {
 		if (node) {
@@ -50,14 +61,14 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 			return (
 			  <div>
 				<strong>System Properties</strong>
-				<Table table={node.data.systemTable} onTableChange={onTableChange} tableType={activeTab} />
+				<Table table={tableA} onTableChange={handleTableAChange} tableType={activeTab} />
 			  </div>
 			);
 		  case 'vulnerability':
 			return (
 			  <div>
 				<strong>Vulnerability Properties</strong>
-				<Table table={node.data.vulnerabilityTable} onTableChange={onTableChange} tableType={activeTab} />
+				<Table table={tableB} onTableChange={handleTableBChange} tableType={activeTab} />
 			  </div>
 			);
 		  default:

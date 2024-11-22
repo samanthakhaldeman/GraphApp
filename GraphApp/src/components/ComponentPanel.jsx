@@ -17,12 +17,7 @@ export default ({openMenu}) => {
   };
 
   return (
-    <aside>
-      <button className="hamburger-icon" onClick={openMenu}>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-      </button>
+    <aside className='panel'>
       <h3 style={{marginTop: '60px', marginBottom: '15px'}}>You can drag these nodes to the pane on the right.</h3>
       <div className="custom-node" 
       onDragStart={(event) => onDragStart(event, 'custom', 'Node')} 

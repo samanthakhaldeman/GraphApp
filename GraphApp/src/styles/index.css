@@ -24,6 +24,44 @@
 
 }
 
+.sidepanel {
+    display: flex;
+    flex-direction: row;
+}
+
+.sidepanel .small {
+    width: 3vw;
+}
+
+.sidepanel .large {
+    width: 16vw;
+}
+
+.sidepanel-buttons {
+    display: flex;
+    flex-direction: column;
+    width: 3vw;
+    background-color: #444;
+}
+
+.sidepanel-icon {
+    width: 45px;
+    height: 45px;
+}
+
+.sidepanel-icon-image {
+    width: 30px;
+    height: 30px;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    width: 13vw;
+    height: 100vh;
+    background-color: #333;
+}
+
 .react-flow__controls {
     color: #333;
 }
@@ -123,26 +161,6 @@
     gap: 10px;
 }
 
-.hamburger-icon {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 20;
-    margin-top: -2px;
-    margin-left: 0px;
-}
-  
-.hamburger-icon .bar {
-    width: 25px;
-    height: 3px;
-    background-color: #eee;
-    margin: 5px 0;
-    transition: 0.3s;
-}
-
 input, select, button {
     appearance: none;
     width: 90px;
@@ -186,7 +204,6 @@ select {
     }
 
     .dndflow aside {
-        width: 13%;
         max-width: 250px;
     }
 }

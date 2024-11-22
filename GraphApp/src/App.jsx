@@ -13,10 +13,9 @@ import { debounce } from 'lodash';
 import ErrorBoundary from './ErrorBoundary';
 import CustomNode from './components/CustomNode';
 import useStore from './store';
-import Sidebar from './components/Sidebar';
+import SidePanel from './components/SidePanel';
 import NodePopUp from './components/NodePopUp';
 import EdgePopUp from './components/EdgePopUp';
-import HamburgerMenu from './components/HamburgerMenu';
 
 import { DnDProvider } from './DnDContext';
 
@@ -303,8 +302,7 @@ const FlowComponent= () => {
 
   return (
     <div className="dndflow">
-      {!menuIsOpen && <Sidebar openMenu={toggleMenu}/>}
-      {menuIsOpen && <HamburgerMenu closeMenu={toggleMenu} nodes={nodes} edges={edges} setNodes={setNodes} setEdges={setEdges} />}
+      <SidePanel nodes={nodes} edges={edges} setNodes={setNodes} setEdges={setEdges} />
       <div className={`reactflow-wrapper`} 
         ref={reactFlowWrapper} 
         onDrop={(event) => handleDrop(event)}

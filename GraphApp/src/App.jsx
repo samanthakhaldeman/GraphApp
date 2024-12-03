@@ -80,6 +80,63 @@ const FlowComponent= () => {
     };
   }, [selectedNode.current, setNodes], [selectedEdge.current, setEdges]);
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key === 'c') {
+        if (selectedNode) {
+          console.log("node copied");
+          console.log(JSON.stringify(selectedNode));
+          localStorage.setItem('copiedNode', JSON.stringify(selectedNode));
+          console.log(localStorage.getItem('copiedNode'));
+        }
+      } else if (event.ctrlKey && event.key === 'v') {
+        console.log(localStorage.getItem('copiedNode'));
+        const copiedNode = JSON.parse(localStorage.getItem('copiedNode'));
+        console.log(copiedNode.id, copiedNode.data);
+        if (copiedNode) {
+          const handlePaste = (mouseEvent) => {
+            const { clientX, clientY } = mouseEvent;
+            const canvasRect = document.querySelector('.react-flow__pane').getBoundingClientRect();
+  
+            const position = {
+              x: clientX - canvasRect.left,
+              y: clientY - canvasRect.top,
+            };
+  
+            const newNode = {
+              id: `${copiedNode.current.id}_copy_${getNodeId()}`, 
+              type: copiedNode.current.type,
+              position,
+              data: {
+                label: `${copiedNode.current.data.label}_copy`,
+                image: copiedNode.current.data.image,
+                type: copiedNode.current.data.type,
+                systemTable: copiedNode.current.data.systemTable,
+                vulnerabilityTable: copiedNode.current.data.vulnerabilityTable
+              }, 
+              draggable: true,
+              sourcePosition: 'right',
+              targetPosition: 'left',
+              onclick: {onNodeClick}
+            };
+            
+            controlledAddNode(newNode);
+            window.removeEventListener('mousemove', handlePaste);
+          };
+  
+          window.addEventListener('mousemove', handlePaste, { once: true });
+          console.log("node pasted");
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedNode, nodes, setNodes]);
+
   const onNodesChange = (changes) => {
     setNodes(nodes);
   };
@@ -232,27 +289,27 @@ const FlowComponent= () => {
     const newNodeId = getNodeId();
     const foundNode = nodes.find(node => node.id === newNodeId);
     if (!foundNode) {
-      controlledAddNode(newNodeId, nodeType, position, name, image);
+      const newNode = {
+        id: newNodeId,
+        type: nodeType,
+        position: position,
+        data: { 
+          label: `${name}`, 
+          image: `${image}`, 
+          type: 'Host', 
+          systemTable: [{ type: '', value: '' }], 
+          vulnerabilityTable: [{type: '', value: ''}]
+        },
+        draggable: true,
+        sourcePosition: 'right',
+        targetPosition: 'left',
+        onclick: {onNodeClick}
+      };
+      controlledAddNode(newNode);
     } 
   };
 
-  const controlledAddNode = debounce((newNodeId, nodeType, position, name, image) => {
-    const newNode = {
-      id: newNodeId,
-      type: nodeType,
-      position: position,
-      data: { 
-        label: `${name}`, 
-        image: `${image}`, 
-        type: 'Host', 
-        systemTable: [{ type: '', value: '' }], 
-        vulnerabilityTable: [{type: '', value: ''}]
-      },
-      draggable: true,
-      sourcePosition: 'right',
-      targetPosition: 'left',
-      onclick: {onNodeClick}
-    };
+  const controlledAddNode = debounce((newNode) => {
     addNode(newNode);
   }, 100);
   

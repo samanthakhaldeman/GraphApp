@@ -43,10 +43,6 @@ const  SidePanel = ({nodes, edges, setNodes, setEdges}) => {
         }
     }
 
-    console.log(fileSystem);
-    console.log(analysis);
-    console.log(components);
-
     return (
         <div className={getPanelSize()}> 
             <aside className='sidepanel-buttons'>

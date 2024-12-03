@@ -40,12 +40,6 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 		}
 	}, []);
 
-    const handleInputEnter = (e) => {
-        if (e.key === 'Enter') {
-            onLabelChange(e.target.value); 
-        }
-    }
-
     const handleTypeChange = (e) => {
         setSelectedType(e.target.value); 
         onTypeChange(e.target.value);
@@ -95,7 +89,7 @@ const NodePopUp = ({ node, position, onLabelChange, onTypeChange, onTableChange,
 					<input
 						type="text"
 						defaultValue={node.data.label}
-						onKeyDown={(e) => handleInputEnter(e)}
+						onChange={(e) => onLabelChange(e.target.value)}
 					/>
 				</div>
 				<button className="regular" 

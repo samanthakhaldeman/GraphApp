@@ -25,8 +25,10 @@ import serverPic from '/src/assets/server.png';
 import firewallPic from '/src/assets/firewall.png';
 import routerPic from '/src/assets/router.png';
 
-let id = 0;
-const getId = () => `dndnode_${id++}`;
+let node_id = 0;
+const getNodeId = () => `node_${node_id++}`;
+let edge_id = 0;
+const getEdgeId = () => `edge_${edge_id++}`;
 
 const FlowComponent= () => {
   const { fitView } = useReactFlow();
@@ -227,7 +229,7 @@ const FlowComponent= () => {
       y: event.clientY,
     });
     
-    const newNodeId = getId();
+    const newNodeId = getNodeId();
     const foundNode = nodes.find(node => node.id === newNodeId);
     if (!foundNode) {
       controlledAddNode(newNodeId, nodeType, position, name, image);
@@ -257,7 +259,7 @@ const FlowComponent= () => {
   const onConnect = (params) => {
     const newEdge = { 
       ...params, 
-      id: `edge-${getId()}`, 
+      id: `${getEdgeId()}`, 
       data: { 
         label: '', 
         onLabelChange: handleEdgeLabelChange, 

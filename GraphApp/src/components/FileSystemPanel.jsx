@@ -18,6 +18,7 @@ const FileSystemPanel = ({ nodes, edges, setNodes, setEdges}) => {
         <button>New</button>
         <button onClick={save}>Save</button>
         <button onClick={load}>Load</button>
+        <button >Convert</button>
     </aside>
   );
 };

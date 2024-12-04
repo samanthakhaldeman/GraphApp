@@ -62,6 +62,14 @@
     background-color: #333;
 }
 
+.preview {
+    width: 12vw;
+    height: 50vh;
+    margin-top: 10px;
+    background-color: #555;
+    color: #eee;
+}
+
 .react-flow__controls {
     color: #333;
 }

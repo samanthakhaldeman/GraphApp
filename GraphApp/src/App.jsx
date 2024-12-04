@@ -107,7 +107,7 @@ const FlowComponent= () => {
               id: `${copiedNode.current.id}_copy_${getNodeId()}`, 
               type: copiedNode.current.type,
               position,
-              data: {
+              data: { 
                 label: `${copiedNode.current.data.label}_copy`,
                 image: copiedNode.current.data.image,
                 type: copiedNode.current.data.type,

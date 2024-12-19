@@ -10,6 +10,7 @@ const CustomNode = ({id, data}) => {
 
   return (
     <div className='custom-node' draggable>
+      <span className="drag-handle__custom" />
       <img src={data.image} className='node-image'></img>
       <div className='node-label'>{data.label}</div>
       <Handle

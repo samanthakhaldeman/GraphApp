@@ -119,11 +119,23 @@
 .node-image {
     width: 50px; 
     height: 50px;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 .node-label {
     font-size: 14px;
     color: #eee;
+}
+   
+.drag-handle__custom {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-top: -8px;
+    margin-bottom: 0px;
+    background-color: #777;
+    border: 1px solid #eee;
+    border-radius: 2px;
+    overflow: visible;
 }
 
 .dndflow .reactflow-wrapper {

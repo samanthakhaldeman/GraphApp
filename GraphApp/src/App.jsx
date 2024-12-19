@@ -292,6 +292,7 @@ const FlowComponent= () => {
       const newNode = {
         id: newNodeId,
         type: nodeType,
+        dragHandle: '.drag-handle__custom',
         position: position,
         data: { 
           label: `${name}`, 

@@ -50,7 +50,7 @@ const FlowComponent= () => {
   const { fitView } = useReactFlow();
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
-  const { nodes, edges, setNodes, setEdges, addNode, addEdge, removeNode, removeEdge } = useStore();
+  const { nodes, edges, setNodes, setEdges, addNode, addEdge, removeNode, removeEdge, undo, redo } = useStore();
   const selectedNode = useRef(null);
   const selectedEdge = useRef(null);
   const [popUpNode, setPopUpNode] = useState(null);
@@ -155,6 +155,23 @@ const FlowComponent= () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [selectedNode, nodes, setNodes]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key === 'z') {
+        console.log("undo");
+        event.preventDefault();
+        undo();
+      } else if (event.ctrlKey && event.key === 'y') {
+        console.log("redo");
+        event.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo]);
 
   const onNodesChange = (changes) => {
     setNodes(nodes);

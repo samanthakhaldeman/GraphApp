@@ -20,7 +20,7 @@ export default ({openMenu}) => {
     <aside className='panel'>
       <h3 style={{marginTop: '60px', marginBottom: '15px'}}>You can drag these nodes to the pane on the right.</h3>
       <div className="custom-node" 
-      onDragStart={(event) => onDragStart(event, 'custom', 'Node')} 
+      onDragStart={(event) => onDragStart(event, 'customNode', 'Node')} 
       draggable="true">
         Node
       </div>

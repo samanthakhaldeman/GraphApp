@@ -12,6 +12,8 @@ import { debounce } from 'lodash';
 
 import ErrorBoundary from './ErrorBoundary';
 import CustomNode from './components/CustomNode';
+import FloatingEdge from './components/FloatingEdge';
+import CustomConnectionLine from './components/CustomConnectionLine';
 import useStore from './store';
 import SidePanel from './components/SidePanel';
 import NodePopUp from './components/NodePopUp';
@@ -27,8 +29,22 @@ import routerPic from '/src/assets/router.png';
 
 let node_id = 0;
 const getNodeId = () => `node_${node_id++}`;
+
 let edge_id = 0;
 const getEdgeId = () => `edge_${edge_id++}`;
+
+
+const defaultEdgeOptions = {
+  type: 'floatingEdge',
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    color: '#b1b1b7',
+  },
+};
+
+const connectionLineStyle = {
+  stroke: '#b1b1b7',
+};
 
 const FlowComponent= () => {
   const { fitView } = useReactFlow();
@@ -41,10 +57,14 @@ const FlowComponent= () => {
   const [popUpEdge, setPopUpEdge] = useState(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
-
+  
   const nodeTypes = useMemo(() => ({
-    custom: CustomNode,
-  }), []);
+    customNode: CustomNode,
+  }), [CustomNode]);
+  
+  const edgeTypes = useMemo(() => ({
+    floatingEdge: FloatingEdge,
+  }), [FloatingEdge]);
 
   const getImage = (type) => {
     var image;
@@ -114,7 +134,6 @@ const FlowComponent= () => {
                 systemTable: copiedNode.current.data.systemTable,
                 vulnerabilityTable: copiedNode.current.data.vulnerabilityTable
               }, 
-              draggable: true,
               sourcePosition: 'right',
               targetPosition: 'left',
               onclick: {onNodeClick}
@@ -301,22 +320,17 @@ const FlowComponent= () => {
           systemTable: [{ type: '', value: '' }], 
           vulnerabilityTable: [{type: '', value: ''}]
         },
-        draggable: true,
-        sourcePosition: 'right',
-        targetPosition: 'left',
         onclick: {onNodeClick}
       };
-      controlledAddNode(newNode);
+      addNode(newNode);
     } 
   };
-
-  const controlledAddNode = debounce((newNode) => {
-    addNode(newNode);
-  }, 100);
   
   const onConnect = (params) => {
+    console.log("edge params: ", params);
     const newEdge = { 
       ...params, 
+      type: "floatingEdge",
       id: `${getEdgeId()}`, 
       data: { 
         label: '', 
@@ -329,7 +343,7 @@ const FlowComponent= () => {
       },
     }
     addEdge(newEdge);
-  }
+  } 
   
   const onNodeDrag = (event, node) => {
     addNode({ ...node, position: node.position });
@@ -377,6 +391,10 @@ const FlowComponent= () => {
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          defaultEdgeOptions={defaultEdgeOptions}
+          connectionLineComponent={CustomConnectionLine}
+          connectionLineStyle={connectionLineStyle}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
@@ -386,8 +404,6 @@ const FlowComponent= () => {
           onNodeDrag={onNodeDrag}
           onNodeDragStop={onNodeDragStop}
           onConnect={onConnect}
-          draggable={true}
-          panOnDrag
           zoomOnScroll
           fitView
         >

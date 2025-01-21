@@ -18,6 +18,7 @@ const useStore = create((set) => ({
         return { nodes: updatedNodes };
       } else {
         // If node doesn't exist, add it to the state
+        console.log(newNode.type)
         return { nodes: [...state.nodes, newNode] };
       }
     }),

@@ -10,8 +10,8 @@ function CustomConnectionLine({ fromX, fromY, toX, toY, connectionLineStyle }) {
   });
  
   return (
-    <g>
-      <path style={connectionLineStyle} fill="none" d={edgePath} />
+    <g key={`${fromX}-${fromY}-${toX}-${toY}`}>
+      <path style={connectionLineStyle}  d={edgePath} />
     </g>
   );
 }

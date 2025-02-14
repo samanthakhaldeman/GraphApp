@@ -1,10 +1,11 @@
 import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
-import ReactFlow, { MarkerType } from 'reactflow';
+import ReactFlow from 'reactflow';
 import {
   ReactFlowProvider,
   Controls,
   useReactFlow,
   Background,
+  MarkerType, 
   BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -33,18 +34,22 @@ const getNodeId = () => `node_${node_id++}`;
 let edge_id = 0;
 const getEdgeId = () => `edge_${edge_id++}`;
 
-
-const defaultEdgeOptions = {
-  type: 'floatingEdge',
-  markerEnd: {
-    type: MarkerType.ArrowClosed,
-    color: '#b1b1b7',
-  },
-};
-
 const connectionLineStyle = {
   stroke: '#b1b1b7',
+  strokeWidth: 1,
 };
+
+let fromNode = null;
+
+export const getFromNode = () => {
+  return fromNode;
+}
+
+let connectionInProgress = false;
+
+export const isConnectionInProgress = () => {
+  return connectionInProgress;
+}
 
 const FlowComponent= () => {
   const { fitView } = useReactFlow();
@@ -58,14 +63,19 @@ const FlowComponent= () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
   
-  const nodeTypes = useMemo(() => ({
-    customNode: CustomNode,
-  }), [CustomNode]);
-  
-  const edgeTypes = useMemo(() => ({
-    floatingEdge: FloatingEdge,
-  }), [FloatingEdge]);
+  const nodeTypes = useMemo(() => ({ customNode: CustomNode }), [CustomNode]);
+  const edgeTypes = useMemo(() => ({ floatingEdge: FloatingEdge }), []);
 
+  console.log(edgeTypes);
+  
+  const defaultEdgeOptions = {
+    type: 'floatingEdge',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: 'white',
+    },
+  };
+  
   const getImage = (type) => {
     var image;
     if (type == 'Host') {
@@ -300,6 +310,17 @@ const FlowComponent= () => {
     })
     setEdges(updatedEdges);
   }
+
+  const handleConnectionProgressChange = (bool) => {
+    const updatedNodes = [];
+    
+    nodes.forEach((node) => {
+      updatedNodes.push({
+        ...node, data: {...node.data, inProgress: bool},
+      });
+    })
+    setNodes(updatedNodes);
+  }
   
   const handleDragOver = useCallback((event) => {
     event.preventDefault();
@@ -335,32 +356,59 @@ const FlowComponent= () => {
           image: `${image}`, 
           type: 'Host', 
           systemTable: [{ type: '', value: '' }], 
-          vulnerabilityTable: [{type: '', value: ''}]
+          vulnerabilityTable: [{type: '', value: ''}],
+          inProgress: false,
         },
         onclick: {onNodeClick}
       };
       addNode(newNode);
     } 
   };
+
+  const edgeExists = (newEdge) => {
+    edges.forEach((edge) => {
+      if (edge.source == newEdge.source && edge.target == newEdge.target) {
+        return true;
+      }
+    });
+    return false;
+  }
   
   const onConnect = (params) => {
     console.log("edge params: ", params);
     const newEdge = { 
       ...params, 
-      type: "floatingEdge",
+      type: 'floatingEdge',
       id: `${getEdgeId()}`, 
-      data: { 
-        label: '', 
-        onLabelChange: handleEdgeLabelChange, 
-        connectivityTable: [{ type: '', value: '' }], 
-        vulnerabilityTable: [{ type: '', value: '' }] 
-      }, 
       markerEnd: {
         type: MarkerType.ArrowClosed,
       },
     }
-    addEdge(newEdge);
+    if (!edgeExists(newEdge)) {
+      addEdge(newEdge);
+    }
+    fromNode = null;
+    connectionInProgress = false;
+    handleConnectionProgressChange(false);
+    console.log("edges: ", edges);
   } 
+
+  const onConnectStart = (event, params) => {
+    fromNode = params.nodeId;
+    connectionInProgress = true;
+    handleConnectionProgressChange(true);
+    console.log("connection start");
+    
+  };
+
+  const onConnectEnd = (event) => {
+    console.log("connection end");
+    console.log(event.target);
+    fromNode = null;
+    if (!(event.target instanceof HTMLElement && event.target.dataset.handleid !== undefined)) {
+      connectionInProgress = false;
+    }
+  };
   
   const onNodeDrag = (event, node) => {
     addNode({ ...node, position: node.position });
@@ -405,6 +453,7 @@ const FlowComponent= () => {
           fitViewOptions={{ padding: 0.2, maxZoom: 2, minZoom: 0.01 }}
           onlyRenderVisibleElements={false}
           onMove={onMove}
+          elements={[...nodes, ...edges]}
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
@@ -421,6 +470,8 @@ const FlowComponent= () => {
           onNodeDrag={onNodeDrag}
           onNodeDragStop={onNodeDragStop}
           onConnect={onConnect}
+          onConnectStart={onConnectStart}
+          onConnectEnd={onConnectEnd}
           zoomOnScroll
           fitView
         >

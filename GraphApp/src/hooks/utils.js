@@ -5,33 +5,45 @@ import { Position, MarkerType } from '@xyflow/react';
 // of the line between the center of the intersectionNode and the target node
 function getNodeIntersection(intersectionNode, targetNode) {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
-  const { width: intersectionNodeWidth, height: intersectionNodeHeight } =
-    intersectionNode.measured;
-  const intersectionNodePosition = intersectionNode.internals.positionAbsolute;
-  const targetPosition = targetNode.internals.positionAbsolute;
+  console.log("getNodeIntersection", intersectionNode, targetNode);
+  // console.log("intersectionNode.measured", intersectionNode.measured);
+  // console.log("intersectionNode.interneals.positionAbsolute", intersectionNode.internals.positionAbsolute);
+  // console.log("targetNode.internals.positionAbsolute", targetNode.internals.positionAbsolute);
+  // console.log("targetNode width and height: ", targetNode.measured.width, targetNode.measured.height);
+  // const { width: intersectionNodeWidth, height: intersectionNodeHeight } =
+  //   intersectionNode.measured;
+
+  const intersectionNodeRadius = 40;
+  const intersectionNodePosition = intersectionNode.position;
+  const targetNodeRadius = 40;
+  const targetPosition = targetNode.position;
+
+  console.log("got intersectionNodePosition and targetPosition", intersectionNodePosition, targetPosition);
  
-  const w = intersectionNodeWidth / 2;
-  const h = intersectionNodeHeight / 2;
- 
-  const x2 = intersectionNodePosition.x + w;
-  const y2 = intersectionNodePosition.y + h;
-  const x1 = targetPosition.x + targetNode.measured.width / 2;
-  const y1 = targetPosition.y + targetNode.measured.height / 2;
- 
-  const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h);
-  const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h);
-  const a = 1 / (Math.abs(xx1) + Math.abs(yy1) || 1);
-  const xx3 = a * xx1;
-  const yy3 = a * yy1;
-  const x = w * (xx3 + yy3) + x2;
-  const y = h * (-xx3 + yy3) + y2;
- 
+  const x2 = intersectionNodePosition.x + intersectionNodeRadius;
+  const y2 = intersectionNodePosition.y + intersectionNodeRadius;
+  const x1 = targetPosition.x + targetNodeRadius;
+  const y1 = targetPosition.y + targetNodeRadius;
+
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance === 0) {
+    console.error("Nodes are at the same position, cannot compute intersection.");
+    return { x: x2, y: y2 };
+  }
+
+  const scale = intersectionNodeRadius / distance;
+  const x = x2 - dx * scale;
+  const y = y2 - dy * scale;
+
   return { x, y };
 }
  
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
 function getEdgePosition(node, intersectionPoint) {
-  const n = { ...node.measured.positionAbsolute, ...node };
+  const n = { ...node.position, ...node };
   const nx = Math.round(n.x);
   const ny = Math.round(n.y);
   const px = Math.round(intersectionPoint.x);
@@ -40,13 +52,13 @@ function getEdgePosition(node, intersectionPoint) {
   if (px <= nx + 1) {
     return Position.Left;
   }
-  if (px >= nx + n.measured.width - 1) {
+  if (px >= nx + 80 - 1) {
     return Position.Right;
   }
   if (py <= ny + 1) {
     return Position.Top;
   }
-  if (py >= n.y + n.measured.height - 1) {
+  if (py >= n.y + 80 - 1) {
     return Position.Bottom;
   }
  

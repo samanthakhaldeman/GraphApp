@@ -14,7 +14,7 @@ export const saveGraph = async (nodes, edges) => {
         if (filePath) {
             const graphData = {
                 nodes: nodes.map(node => ({ id: node.id, data: node.data, position: node.position, type: node.type })),
-                edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, markerEnd: edge.markerEnd, type: edge.type, data: edge.data })),
+                edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, markerEnd: edge.markerEnd })),
             };
             
             const json = JSON.stringify(graphData, null, 2);

@@ -1,16 +1,21 @@
-import { getStraightPath, useInternalNode } from '@xyflow/react';
+import React, { memo } from 'react';
+import { getStraightPath, useReactFlow } from '@xyflow/react';
  
 import { getEdgeParams } from '../hooks/utils.js';
+import useStore from '../store.js';
  
-export default function FloatingEdge({ id, source, target, markerEnd, style }) {
-  const sourceNode = useInternalNode(source);
-  const targetNode = useInternalNode(target);
+const FloatingEdge = memo(({ id, source, target, markerEnd, style }) => {
+
+  const nodes = useStore(state => state.nodes);
+  const sourceNode = nodes.find(node => node.id === source);
+  const targetNode = nodes.find(node => node.id === target);
  
   if (!sourceNode || !targetNode) {
     return null;
   }
- 
+
   const { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode);
+  console.log(`Edge Params for ${id}:`, sx, sy, tx, ty);
  
   const [edgePath] = getStraightPath({
     sourceX: sx,
@@ -28,4 +33,6 @@ export default function FloatingEdge({ id, source, target, markerEnd, style }) {
       style={style}
     />
   );
-}
+});
+
+export default FloatingEdge;

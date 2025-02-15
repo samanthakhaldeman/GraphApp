@@ -13,7 +13,7 @@ export const saveGraph = async (nodes, edges) => {
 
         if (filePath) {
             const graphData = {
-                nodes: nodes.map(node => ({ id: node.id, data: node.data, position: node.position, type: node.type })),
+                nodes: nodes.map(node => ({ id: node.id, dragHandle: node.dragHandle, data: node.data, position: node.position, type: node.type, onclick: node.onclick })),
                 edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, markerEnd: edge.markerEnd })),
             };
             

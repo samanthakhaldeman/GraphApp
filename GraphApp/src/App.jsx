@@ -96,6 +96,7 @@ const FlowComponent= () => {
     const handleKeyDown = (event) => {
       if (event.key === 'Backspace' && selectedNode.current && !popUpNode) {
         removeNode(selectedNode.current.id);
+        
       }
       else if (event.key === 'Backspace' && selectedEdge.current && !popUpEdge) {
         removeEdge(selectedEdge.current.id);

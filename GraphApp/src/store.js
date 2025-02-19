@@ -49,7 +49,8 @@ const useStore = create((set) => ({
       ...state,
       undoStack: [...state.undoStack, { nodes: state.nodes, edges: state.edges }],
       redoStack: [],
-      nodes: state.nodes.filter((node) => node.id !== nodeId) 
+      nodes: state.nodes.filter((node) => node.id !== nodeId),
+      edges: state.edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
     };
   }),
   removeEdge: (edgeId) => set((state) => {

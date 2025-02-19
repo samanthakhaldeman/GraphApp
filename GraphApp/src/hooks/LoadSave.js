@@ -1,5 +1,6 @@
 import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs';
 import { save, open } from '@tauri-apps/plugin-dialog';
+import { setNodeCount, setEdgeCount } from '../App';
 
 export const saveGraph = async (nodes, edges) => {
     console.log("nodes length: ", nodes.length);
@@ -13,8 +14,8 @@ export const saveGraph = async (nodes, edges) => {
 
         if (filePath) {
             const graphData = {
-                nodes: nodes.map(node => ({ id: node.id, dragHandle: node.dragHandle, data: node.data, position: node.position, type: node.type, onclick: node.onclick })),
-                edges: edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, type: edge.type, markerEnd: edge.markerEnd })),
+                nodes: nodes.map(node => ({ id: node.id, type: node.type, dragHandle: node.dragHandle, position: node.position, data: node.data, onclick: node.onclick })),
+                edges: edges.map(edge => ({ id: edge.id, markerEnd: edge.markerEnd, source: edge.source, sourceHandle: edge.sourceHandle, target: edge.target, targetHandle: edge.targetHandle, type: edge.type })),
             };
             
             const json = JSON.stringify(graphData, null, 2);
@@ -41,7 +42,9 @@ export const loadGraph = async (setNodes, setEdges) => {
 
             if (graphData.nodes && graphData.edges) {
                 setNodes(graphData.nodes);
+                setNodeCount(graphData.nodes.length);
                 setEdges(graphData.edges);
+                setEdgeCount(graphData.edges.length);
             } else {
                 alert("Invalid graph data. Please check the file format.");
             }

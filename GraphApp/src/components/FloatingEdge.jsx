@@ -15,7 +15,6 @@ const FloatingEdge = memo(({ id, source, target, markerEnd, style }) => {
   }
 
   const { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode);
-  console.log(`Edge Params for ${id}:`, sx, sy, tx, ty);
  
   const [edgePath] = getStraightPath({
     sourceX: sx,

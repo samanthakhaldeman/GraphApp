@@ -5,20 +5,11 @@ import { Position, MarkerType } from '@xyflow/react';
 // of the line between the center of the intersectionNode and the target node
 function getNodeIntersection(intersectionNode, targetNode) {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
-  console.log("getNodeIntersection", intersectionNode, targetNode);
-  // console.log("intersectionNode.measured", intersectionNode.measured);
-  // console.log("intersectionNode.interneals.positionAbsolute", intersectionNode.internals.positionAbsolute);
-  // console.log("targetNode.internals.positionAbsolute", targetNode.internals.positionAbsolute);
-  // console.log("targetNode width and height: ", targetNode.measured.width, targetNode.measured.height);
-  // const { width: intersectionNodeWidth, height: intersectionNodeHeight } =
-  //   intersectionNode.measured;
 
   const intersectionNodeRadius = 40;
   const intersectionNodePosition = intersectionNode.position;
   const targetNodeRadius = 40;
   const targetPosition = targetNode.position;
-
-  console.log("got intersectionNodePosition and targetPosition", intersectionNodePosition, targetPosition);
  
   const x2 = intersectionNodePosition.x + intersectionNodeRadius;
   const y2 = intersectionNodePosition.y + intersectionNodeRadius;
@@ -30,6 +21,7 @@ function getNodeIntersection(intersectionNode, targetNode) {
   const distance = Math.sqrt(dx * dx + dy * dy);
 
   if (distance === 0) {
+    console.log(intersectionNode, targetNode);
     console.error("Nodes are at the same position, cannot compute intersection.");
     return { x: x2, y: y2 };
   }

@@ -9,7 +9,6 @@ import {
   BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { debounce } from 'lodash';
 
 import ErrorBoundary from './ErrorBoundary';
 import CustomNode from './components/CustomNode';
@@ -30,9 +29,11 @@ import routerPic from '/src/assets/router.png';
 
 let node_id = 0;
 const getNodeId = () => `node_${node_id++}`;
+export const setNodeCount = (num) => node_id = num;
 
 let edge_id = 0;
 const getEdgeId = () => `edge_${edge_id++}`;
+export const setEdgeCount = (num) => edge_id = num;
 
 const connectionLineStyle = {
   stroke: '#b1b1b7',
@@ -65,8 +66,6 @@ const FlowComponent= () => {
   
   const nodeTypes = useMemo(() => ({ customNode: CustomNode }), [CustomNode]);
   const edgeTypes = useMemo(() => ({ floatingEdge: FloatingEdge }), []);
-
-  console.log(edgeTypes);
   
   const defaultEdgeOptions = {
     type: 'floatingEdge',
@@ -114,15 +113,10 @@ const FlowComponent= () => {
     const handleKeyDown = (event) => {
       if (event.ctrlKey && event.key === 'c') {
         if (selectedNode) {
-          console.log("node copied");
-          console.log(JSON.stringify(selectedNode));
           localStorage.setItem('copiedNode', JSON.stringify(selectedNode));
-          console.log(localStorage.getItem('copiedNode'));
         }
       } else if (event.ctrlKey && event.key === 'v') {
-        console.log(localStorage.getItem('copiedNode'));
         const copiedNode = JSON.parse(localStorage.getItem('copiedNode'));
-        console.log(copiedNode.id, copiedNode.data);
         if (copiedNode) {
           const handlePaste = (mouseEvent) => {
             const { clientX, clientY } = mouseEvent;
@@ -154,7 +148,6 @@ const FlowComponent= () => {
           };
   
           window.addEventListener('mousemove', handlePaste, { once: true });
-          console.log("node pasted");
         }
       }
     };
@@ -169,11 +162,9 @@ const FlowComponent= () => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.ctrlKey && event.key === 'z') {
-        console.log("undo");
         event.preventDefault();
         undo();
       } else if (event.ctrlKey && event.key === 'y') {
-        console.log("redo");
         event.preventDefault();
         redo();
       }
@@ -362,7 +353,9 @@ const FlowComponent= () => {
         onclick: {onNodeClick}
       };
       addNode(newNode);
+      console.log("node added");
     } 
+    setEdges(edges);
   };
 
   const edgeExists = (newEdge) => {
@@ -375,7 +368,6 @@ const FlowComponent= () => {
   }
   
   const onConnect = (params) => {
-    console.log("edge params: ", params);
     const newEdge = { 
       ...params, 
       type: 'floatingEdge',
@@ -384,26 +376,22 @@ const FlowComponent= () => {
         type: MarkerType.ArrowClosed,
       },
     }
-    if (!edgeExists(newEdge)) {
+    if (!edgeExists(newEdge) && newEdge.source != newEdge.target) {
       addEdge(newEdge);
     }
     fromNode = null;
     connectionInProgress = false;
     handleConnectionProgressChange(false);
-    console.log("edges: ", edges);
   } 
 
   const onConnectStart = (event, params) => {
     fromNode = params.nodeId;
     connectionInProgress = true;
     handleConnectionProgressChange(true);
-    console.log("connection start");
     
   };
 
   const onConnectEnd = (event) => {
-    console.log("connection end");
-    console.log(event.target);
     fromNode = null;
     if (!(event.target instanceof HTMLElement && event.target.dataset.handleid !== undefined)) {
       connectionInProgress = false;

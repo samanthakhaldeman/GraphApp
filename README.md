@@ -1,8 +1,8 @@
 # GraphApp
 
+Created by Rakesh Podder and Samantha Haldeman
 
-
-## Loading on Mac
+# Loading on Mac
 
 ### Clone GraphApp Repository
 
@@ -37,7 +37,7 @@ npm run dev
 
 
 
-## Loading on Linux
+# Loading on Linux
 
 ### Clone GraphApp Repository
 
@@ -72,7 +72,7 @@ npm run dev
 
 
 
-## Loading on Windows
+# Loading on Windows
 
 ### Clone GraphApp Repository
 

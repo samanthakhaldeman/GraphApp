@@ -95,6 +95,8 @@ npm run dev
 
 The first build/run will take a little while to load because it has to compile everything, but each following run will be much faster. 
 
+Depending on your existing setup, it may say that you're missing packages. When installing these packages, just do the base version, not the -dev version. For example, install javascriptcoregtk-4.1 instead of javascriptcoregtk-4.1-dev. Also, as with any new installations, close down your terminal and reopen it before trying to run the application again. 
+
 
 
 

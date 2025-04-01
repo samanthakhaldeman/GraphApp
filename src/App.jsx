@@ -52,10 +52,10 @@ export const isConnectionInProgress = () => {
   return connectionInProgress;
 }
 
-const FlowComponent= () => {
+const FlowComponent = () => {
   const { fitView } = useReactFlow();
   const reactFlowWrapper = useRef(null);
-  const { screenToFlowPosition } = useReactFlow();
+  const { reactFlowInstance } = useReactFlow();
   const { nodes, edges, setNodes, setEdges, addNode, addEdge, removeNode, removeEdge, undo, redo } = useStore();
   const selectedNode = useRef(null);
   const selectedEdge = useRef(null);
@@ -329,11 +329,18 @@ const FlowComponent= () => {
     if (!nodeType) {
       return;
     }
+    
+    const flowWrapper = document.getElementById("reactflow-wrapper");
+    if (!flowWrapper) return;
 
-    const position = screenToFlowPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
+    const bounds = flowWrapper.getBoundingClientRect(); // Get React Flow's actual bounding box
+    // const flowState = reactFlowInstance().toObject(); // Get React Flow's transform state
+    // const zoom = flowState.transform[2]; // Get zoom level
+
+    const position = {
+        x: (event.clientX - bounds.left) , // Adjust for zoom & bounding box
+        y: (event.clientY - bounds.top) ,
+    };
     
     const newNodeId = getNodeId();
     const foundNode = nodes.find(node => node.id === newNodeId);
@@ -420,9 +427,6 @@ const FlowComponent= () => {
     setMenuIsOpen(!menuIsOpen);
   };
 
-  const handleFitView = useCallback(() => {
-    fitView({ padding: 0.2, maxZoom: 1 });
-  }, [fitView]);
 
   const onMove = () => {
     fitView();
@@ -431,15 +435,12 @@ const FlowComponent= () => {
   return (
     <div className="dndflow">
       <SidePanel nodes={nodes} edges={edges} setNodes={setNodes} setEdges={setEdges} />
-      <div className={`reactflow-wrapper`} 
+      <div id='reactflow-wrapper' className={`reactflow-wrapper`} 
         ref={reactFlowWrapper} 
         onDrop={(event) => handleDrop(event)}
         onDragOver={(event) => handleDragOver(event)}
       >
         <ReactFlow
-          defaultViewport={{ x: 0, y: 0, zoom: 0.25 }} 
-          onInit={handleFitView}
-          fitViewOptions={{ padding: 0.2, maxZoom: 2, minZoom: 0.01 }}
           onlyRenderVisibleElements={false}
           onMove={onMove}
           elements={[...nodes, ...edges]}
@@ -461,8 +462,6 @@ const FlowComponent= () => {
           onConnect={onConnect}
           onConnectStart={onConnectStart}
           onConnectEnd={onConnectEnd}
-          zoomOnScroll
-          fitView
         >
           <Background 
             color="#555"

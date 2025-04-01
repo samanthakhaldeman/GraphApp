@@ -49,6 +49,10 @@
     height: 45px;
 }
 
+.page-true {
+    background-color: #222;
+}
+
 .sidepanel-icon-image {
     width: 30px;
     height: 30px;

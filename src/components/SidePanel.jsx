@@ -14,7 +14,7 @@ import ComponentIcon from '../assets/Components.png';
 const  SidePanel = ({nodes, edges, setNodes, setEdges}) => {
     const [fileSystem, toggleFileSystem] = useToggle(false);
     const [analysis, toggleAnalysis] = useToggle(false);
-    const [components, toggleComponents] = useToggle(false);
+    const [components, toggleComponents] = useToggle(true);
 
     const handleFileSystem = () => {
         toggleFileSystem();
@@ -46,13 +46,13 @@ const  SidePanel = ({nodes, edges, setNodes, setEdges}) => {
     return (
         <div className={getPanelSize()}> 
             <aside className='sidepanel-buttons'>
-                <button className='sidepanel-icon' onClick={handleFileSystem}>
+                <button className={'sidepanel-icon page-' + fileSystem} onClick={handleFileSystem}>
                     <img className='sidepanel-icon-image' src={FileSystemIcon} alt='File' />
                 </button>
-                <button className='sidepanel-icon' onClick={handleAnalysis}>
+                <button className={'sidepanel-icon page-' + analysis} onClick={handleAnalysis}>
                     <img className='sidepanel-icon-image' src={AnalysisIcon} alt='Analysis' />
                 </button>
-                <button className='sidepanel-icon' onClick={handleComponents}>
+                <button className={'sidepanel-icon page-' + components} onClick={handleComponents}>
                     <img className='sidepanel-icon-image' src={ComponentIcon} alt='Components'/>
                 </button>
             </aside>

@@ -55,7 +55,8 @@ export const isConnectionInProgress = () => {
 const FlowComponent = () => {
   const { fitView } = useReactFlow();
   const reactFlowWrapper = useRef(null);
-  const { reactFlowInstance } = useReactFlow();
+  const transform = useStore((state) => state.transform);
+  // const { reactFlowInstance } = useReactFlow();
   const { nodes, edges, setNodes, setEdges, addNode, addEdge, removeNode, removeEdge, undo, redo } = useStore();
   const selectedNode = useRef(null);
   const selectedEdge = useRef(null);
@@ -144,7 +145,7 @@ const FlowComponent = () => {
               onclick: {onNodeClick}
             };
             
-            controlledAddNode(newNode);
+            addNode(newNode);
             window.removeEventListener('mousemove', handlePaste);
           };
   
@@ -333,13 +334,19 @@ const FlowComponent = () => {
     const flowWrapper = document.getElementById("reactflow-wrapper");
     if (!flowWrapper) return;
 
-    const bounds = flowWrapper.getBoundingClientRect(); // Get React Flow's actual bounding box
-    // const flowState = reactFlowInstance().toObject(); // Get React Flow's transform state
-    // const zoom = flowState.transform[2]; // Get zoom level
+    const bounds = flowWrapper.getBoundingClientRect(); 
+
+    const x_translation = 0;
+    const y_translation = 0;
+    const zoom = 1;
+    if (transform) {
+      console.log("transform: ", transform);
+      x_translation, y_translation, zoom = transform;
+    }
 
     const position = {
-        x: (event.clientX - bounds.left) , // Adjust for zoom & bounding box
-        y: (event.clientY - bounds.top) ,
+        x: (event.clientX - bounds.left + x_translation) / zoom, 
+        y: (event.clientY - bounds.top + y_translation) / zoom,
     };
     
     const newNodeId = getNodeId();

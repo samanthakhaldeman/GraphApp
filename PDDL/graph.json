@@ -1,0 +1,204 @@
+{
+  "nodes": [
+    {
+      "id": "node_0",
+      "type": "customNode",
+      "dragHandle": ".drag-handle__custom",
+      "position": {
+        "x": 498.5,
+        "y": 205.5
+      },
+      "data": {
+        "label": "Node-001",
+        "image": "/src/assets/host.png",
+        "type": "Host",
+        "systemTable": [
+          {
+            "type": "System-config",
+            "value": "windows 7 spi"
+          },
+          {
+            "type": "IP",
+            "value": "192.16.1.12"
+          }
+        ],
+        "vulnerabilityTable": [
+          {
+            "type": "",
+            "value": ""
+          }
+        ],
+        "inProgress": true
+      },
+      "onclick": {}
+    },
+    {
+      "id": "node_1",
+      "type": "customNode",
+      "dragHandle": ".drag-handle__custom",
+      "position": {
+        "x": 253.5,
+        "y": 155
+      },
+      "data": {
+        "label": "Service-002",
+        "image": "/src/assets/host.png",
+        "type": "Host",
+        "systemTable": [
+          {
+            "type": "Service",
+            "value": "Big ip 15.0.1"
+          },
+          {
+            "type": "IP",
+            "value": "192.16.1.59"
+          },
+          {
+            "type": "Port",
+            "value": "8080"
+          },
+          {
+            "type": "Protocol",
+            "value": "HTTP"
+          }
+        ],
+        "vulnerabilityTable": [
+          {
+            "type": "Source",
+            "value": "TMUI"
+          },
+          {
+            "type": "Reason",
+            "value": "undisclosed pages"
+          },
+          {
+            "type": "User interaction",
+            "value": "No"
+          },
+          {
+            "type": "Trigger",
+            "value": "Accessing unspecified vulnerable pages"
+          },
+          {
+            "type": "Access",
+            "value": "Remote"
+          },
+          {
+            "type": "Privilege",
+            "value": "Unauthenticated"
+          },
+          {
+            "type": "Attacker Action",
+            "value": "Execute remote code"
+          },
+          {
+            "type": "Consequence",
+            "value": "Execution of arbitrary code"
+          },
+          {
+            "type": "Cve",
+            "value": "CVE-2020-5902"
+          }
+        ],
+        "inProgress": true
+      },
+      "onclick": {}
+    },
+    {
+      "id": "node_2",
+      "type": "customNode",
+      "dragHandle": ".drag-handle__custom",
+      "position": {
+        "x": 259.89375,
+        "y": 292.2
+      },
+      "data": {
+        "label": "Service-001",
+        "image": "/src/assets/host.png",
+        "type": "Host",
+        "systemTable": [
+          {
+            "type": "Service",
+            "value": "Wordpress 5.4.0"
+          },
+          {
+            "type": "IP",
+            "value": "192.16.1.26"
+          },
+          {
+            "type": "Port",
+            "value": "80"
+          },
+          {
+            "type": "Protocol",
+            "value": "HTTP"
+          }
+        ],
+        "vulnerabilityTable": [
+          {
+            "type": "Source",
+            "value": "media section file upload"
+          },
+          {
+            "type": "Reason",
+            "value": "special crafted file name handling"
+          },
+          {
+            "type": "User Interaction",
+            "value": "No"
+          },
+          {
+            "type": "Trigger",
+            "value": "uploading file"
+          },
+          {
+            "type": "Access",
+            "value": "Local"
+          },
+          {
+            "type": "Privilege",
+            "value": "Authenticated user"
+          },
+          {
+            "type": "Attacker action",
+            "value": "Upload files with specially crafted name"
+          },
+          {
+            "type": "Consequences",
+            "value": "Arbitrary script execution"
+          },
+          {
+            "type": "Cve",
+            "value": "CVE-2020-11026"
+          }
+        ],
+        "inProgress": true
+      },
+      "onclick": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_1",
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "source": "node_1",
+      "sourceHandle": "node_1-source",
+      "target": "node_0",
+      "targetHandle": "node_0-target",
+      "type": "floatingEdge"
+    },
+    {
+      "id": "edge_2",
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "source": "node_2",
+      "sourceHandle": "node_2-source",
+      "target": "node_0",
+      "targetHandle": "node_0-target",
+      "type": "floatingEdge"
+    }
+  ]
+}
